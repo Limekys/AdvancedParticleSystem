@@ -1,0 +1,53 @@
+{
+  "resources": [
+    {"id":{"name":"o_part_emiter2","path":"objects/o_part_emiter2/o_part_emiter2.yy",},"order":3,},
+    {"id":{"name":"o_part_emiter3","path":"objects/o_part_emiter3/o_part_emiter3.yy",},"order":4,},
+    {"id":{"name":"s_heart","path":"sprites/s_heart/s_heart.yy",},"order":1,},
+    {"id":{"name":"s_pixel","path":"sprites/s_pixel/s_pixel.yy",},"order":0,},
+    {"id":{"name":"o_old_part","path":"objects/o_old_part/o_old_part.yy",},"order":1,},
+    {"id":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"order":2,},
+    {"id":{"name":"AdvancedParticleSystem","path":"scripts/AdvancedParticleSystem/AdvancedParticleSystem.yy",},"order":0,},
+    {"id":{"name":"oControl","path":"objects/oControl/oControl.yy",},"order":0,},
+    {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
+  ],
+  "Options": [
+    {"name":"Linux","path":"options/linux/options_linux.yy",},
+    {"name":"macOS","path":"options/mac/options_mac.yy",},
+    {"name":"Main","path":"options/main/options_main.yy",},
+    {"name":"Windows","path":"options/windows/options_windows.yy",},
+    {"name":"Amazon Fire","path":"options/amazonfire/options_amazonfire.yy",},
+    {"name":"Android","path":"options/android/options_android.yy",},
+    {"name":"iOS","path":"options/ios/options_ios.yy",},
+    {"name":"tvOS","path":"options/tvos/options_tvos.yy",},
+  ],
+  "isDnDProject": false,
+  "isEcma": false,
+  "tutorialPath": "",
+  "configs": {
+    "name": "Default",
+    "children": [],
+  },
+  "RoomOrderNodes": [
+    {"roomId":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
+  ],
+  "Folders": [
+    {"folderPath":"folders/Sprites.yy","order":0,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Scripts.yy","order":1,"resourceVersion":"1.0","name":"Scripts","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Objects.yy","order":2,"resourceVersion":"1.0","name":"Objects","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Rooms.yy","order":3,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
+  ],
+  "AudioGroups": [
+    {"targets":461609314234257646,"resourceVersion":"1.0","name":"audiogroup_default","resourceType":"GMAudioGroup",},
+  ],
+  "TextureGroups": [
+    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":461609314234257646,"resourceVersion":"1.0","name":"Default","resourceType":"GMTextureGroup",},
+  ],
+  "IncludedFiles": [],
+  "MetaData": {
+    "IDEVersion": "2.3.1.536",
+  },
+  "resourceVersion": "1.4",
+  "name": "AdvancedParticleSystem",
+  "tags": [],
+  "resourceType": "GMProject",
+}
