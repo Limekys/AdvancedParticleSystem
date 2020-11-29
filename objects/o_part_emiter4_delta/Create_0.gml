@@ -1,7 +1,7 @@
 ps = new advanced_part_system();
-ps.part_system_deltatime = true;
+ps.enabledelta();
 
-part_emiter_ = new advanced_part_emitter(ps, x-20,y-20,x+20,y+20,x,y);
+part_emiter_ = new advanced_part_emitter(ps, x-20, y-20, x+20, y+20, x, y);
 part_type_ = new advanced_part_type();
 part_type_.part_gravity(0, 0, 0);
 part_type_.part_life(0.5, 1.0);

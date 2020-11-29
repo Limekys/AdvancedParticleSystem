@@ -1,15 +1,15 @@
 {
   "resources": [
-    {"id":{"name":"o_part_emiter2","path":"objects/o_part_emiter2/o_part_emiter2.yy",},"order":4,},
-    {"id":{"name":"o_part_emiter4_delta","path":"objects/o_part_emiter4_delta/o_part_emiter4_delta.yy",},"order":6,},
-    {"id":{"name":"o_part_emiter3","path":"objects/o_part_emiter3/o_part_emiter3.yy",},"order":5,},
+    {"id":{"name":"o_part_emiter2","path":"objects/o_part_emiter2/o_part_emiter2.yy",},"order":3,},
+    {"id":{"name":"o_part_emiter4_delta","path":"objects/o_part_emiter4_delta/o_part_emiter4_delta.yy",},"order":5,},
+    {"id":{"name":"o_part_emiter3","path":"objects/o_part_emiter3/o_part_emiter3.yy",},"order":4,},
     {"id":{"name":"s_heart","path":"sprites/s_heart/s_heart.yy",},"order":1,},
     {"id":{"name":"s_pixel","path":"sprites/s_pixel/s_pixel.yy",},"order":0,},
-    {"id":{"name":"obj_SteadyDeltaTime","path":"objects/obj_SteadyDeltaTime/obj_SteadyDeltaTime.yy",},"order":0,},
-    {"id":{"name":"o_old_part","path":"objects/o_old_part/o_old_part.yy",},"order":2,},
-    {"id":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"order":3,},
+    {"id":{"name":"oSteadyDeltaTime","path":"objects/oSteadyDeltaTime/oSteadyDeltaTime.yy",},"order":0,},
+    {"id":{"name":"o_old_part","path":"objects/o_old_part/o_old_part.yy",},"order":1,},
+    {"id":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"order":2,},
     {"id":{"name":"AdvancedParticleSystem","path":"scripts/AdvancedParticleSystem/AdvancedParticleSystem.yy",},"order":0,},
-    {"id":{"name":"oControl","path":"objects/oControl/oControl.yy",},"order":1,},
+    {"id":{"name":"oControl","path":"objects/oControl/oControl.yy",},"order":0,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [
@@ -37,6 +37,7 @@
     {"folderPath":"folders/Scripts.yy","order":1,"resourceVersion":"1.0","name":"Scripts","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Objects.yy","order":2,"resourceVersion":"1.0","name":"Objects","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Rooms.yy","order":3,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Objects/DEMO.yy","order":7,"resourceVersion":"1.0","name":"DEMO","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":461609314234257646,"resourceVersion":"1.0","name":"audiogroup_default","resourceType":"GMAudioGroup",},

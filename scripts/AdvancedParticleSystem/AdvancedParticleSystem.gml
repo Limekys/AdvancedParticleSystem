@@ -1,21 +1,8 @@
 function advanced_part_system() constructor {
+	
 	particle_list = ds_list_create();
 	
-	part_system_deltatime = false;
-	//part_system_delta = 1;
-	
-	var cam = view_camera[0];
-	part_system_view_width = camera_get_view_width(cam);
-	part_system_view_height = camera_get_view_height(cam);
-	part_system_view_x = camera_get_view_x(cam);
-	part_system_view_y = camera_get_view_y(cam);
-	
-	function get_view(x, y, width, height) {
-		//return true if particle is in view
-		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
-			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
-	}
-	
+	//Particle updating
 	function step() {
 		//update deltatime
 		var part_system_delta = part_system_deltatime ? global.dt_steady : 1;
@@ -67,6 +54,7 @@ function advanced_part_system() constructor {
 		}
 	}
 	
+	//Particle drawing
 	function draw() {
 		if !ds_list_empty(particle_list) {
 			var _size = ds_list_size(particle_list);
@@ -85,6 +73,29 @@ function advanced_part_system() constructor {
 				}
 			}
 		}
+	}
+	
+	//Camera check function
+	var cam = view_camera[0];
+	part_system_view_width = camera_get_view_width(cam);
+	part_system_view_height = camera_get_view_height(cam);
+	part_system_view_x = camera_get_view_x(cam);
+	part_system_view_y = camera_get_view_y(cam);
+	
+	function get_view(x, y, width, height) {
+		//return true if particle is in view
+		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
+			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
+	}
+	
+	//Deltatime function
+	part_system_deltatime = false;
+	
+	function enabledelta() {
+		if !instance_exists(oSteadyDeltaTime) {
+			instance_create_depth(0, 0, 9999, oSteadyDeltaTime);
+		}
+		part_system_deltatime = true;
 	}
 }
 
