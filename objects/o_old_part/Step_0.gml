@@ -1,1 +1,1 @@
-part_emitter_burst(part_sys, part_emit, part, 484);
+part_emitter_burst(part_sys, part_emit, part, 75);

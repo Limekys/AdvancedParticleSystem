@@ -9,9 +9,19 @@ function advanced_part_system() constructor {
 				if particle {
 					//update every particle
 					with(particle) {
-						var gravity_dir = point_direction(x, y, emiter_.point_gravity_x, emiter_.point_gravity_y);
-						var x_speed = lengthdir_x(speed,direction)+lengthdir_x(gravity_num,gravity_direction)+lengthdir_x(point_gravity_num,gravity_dir);
-						var y_speed = lengthdir_y(speed,direction)+lengthdir_y(gravity_num,gravity_direction)+lengthdir_y(point_gravity_num,gravity_dir);
+						var x_speed = lengthdir_x(speed,direction);
+						var y_speed = lengthdir_y(speed,direction);
+						
+						if gravity_num {
+							x_speed += lengthdir_x(gravity_num,gravity_direction);
+							y_speed += lengthdir_y(gravity_num,gravity_direction);
+						}
+						if point_gravity_num {
+							var gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
+							x_speed += lengthdir_x(point_gravity_num,gravity_dir);
+							y_speed += lengthdir_y(point_gravity_num,gravity_dir);
+						}
+						
 						var speed_ = point_distance(0,0,x_speed,y_speed);
 						var dir = point_direction(0,0,x_speed,y_speed);
 						x += x_speed;
@@ -19,16 +29,17 @@ function advanced_part_system() constructor {
 						speed = speed_;
 						direction = dir;
 						life--;
-			
+						
 						//destroy particles
 						if life <= 0 {
 							if dead_part {
-								var part = advanced_part_burst(other, emiter_, dead_part);
+								var part = advanced_part_burst(other, emitter, dead_part);
 								part.x = x;
 								part.y = y;
 								ds_list_replace(other.particle_list, ds_list_size(other.particle_list)-1, part);
 							}
 							ds_list_delete(other.particle_list, i);
+							i--;
 						}
 					}
 				}
@@ -70,9 +81,9 @@ function advanced_part_emitter(ps, x1, y1, x2, y2, num_spawn, spawn_speed, gravi
 	point_gravity_y = gravity_point_y;
 	
 	function particle(part_) constructor {
-		emiter_ = other;
-		x = random_range(emiter_.x_left,emiter_.x_right);
-		y = random_range(emiter_.y_top,emiter_.y_down);
+		emitter = other;
+		x = random_range(emitter.x_left,emitter.x_right);
+		y = random_range(emitter.y_top,emitter.y_down);
 		color = part_.part_color;
 		alpha = 1;
 		sprite = part_.part_sprite;
