@@ -1,5 +1,5 @@
 part_sys = new advanced_part_system();
-part_emiter_ = new advanced_part_emitter(part_sys, x-20,y,x+20,y,1,1,x,y);
+part_emiter_ = new advanced_part_emitter(part_sys, x-20,y,x+20,y,x,y);
 part_type_ = new advanced_part_type();
 part_type_.part_gravity(0,0,1);
 part_type_.part_life(150,210);

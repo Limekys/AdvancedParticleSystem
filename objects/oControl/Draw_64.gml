@@ -1,1 +1,1 @@
-draw_text(4,4,fps_real);
+draw_text(4, 4, "room_speed: " + string(room_speed) + " (real_fps: " + string(fps_real) + ")");
