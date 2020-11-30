@@ -15,8 +15,8 @@ part_type_2.part_image(s_pixel,c_lime);
 part_type_2.part_move(-10,10,1,3);
 
 part_type_3 = new advanced_part_type();
-part_type_3.part_gravity(270,0.25,0);
-part_type_3.part_life(30,30);
+part_type_3.part_gravity(270,1.25,0);
+part_type_3.part_life(60,120);
 part_type_3.part_transform(0,359,1,2,1,1,true);
 part_type_3.part_image(s_heart, c_red);
 part_type_3.part_move(-10,10,1,3);

@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Main",
-    "path": "folders/Main.yy",
+    "name": "DEMO",
+    "path": "folders/DEMO.yy",
   },
   "resourceVersion": "1.0",
-  "name": "AdvancedParticleSystem",
+  "name": "UsefulScripts",
   "tags": [],
   "resourceType": "GMScript",
 }
