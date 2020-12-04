@@ -1,7 +1,7 @@
-advanced_part_burst(ps, part_emiter_, part_type_, global.dt_steady * 60 * 10);
+advanced_part_burst(ps, part_emiter_, part_type_, global.dt_steady * 60 * 5);
 
-part_emiter_.point_gravity_x = oPointTarget.x;
-part_emiter_.point_gravity_y = oPointTarget.y;
+//part_emiter_.point_gravity_x = oPointTarget.x;
+//part_emiter_.point_gravity_y = oPointTarget.y;
 
 //move towards mouse
 if keyboard_check(vk_control)

@@ -2,7 +2,7 @@ function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
 	
-	//Particle updating
+	//Particles updating
 	function step() {
 		//calculate deltatime
 		var part_system_delta = part_system_deltatime ? global.dt_steady : 1;
@@ -36,6 +36,28 @@ function advanced_part_system() constructor {
 						
 						life -= part_system_delta;
 						
+						//Changing color
+						if colors_enabled {
+							var percent = 1 - (life / life_max);
+							
+							if percent <= 0.5 {
+								color = merge_colour(color1, color2, percent * 2);
+							} else {
+								color = merge_colour(color2, color3, percent * 2 - 1);
+							}
+						}
+						
+						//Changing alpha
+						if alpha_blend_enabled {
+							var percent = 1 - (life / life_max);
+							
+							if percent <= 0.5 {
+								alpha = lerp(alpha1, alpha2, percent * 2);
+							} else {
+								alpha = lerp(alpha2, alpha3, percent * 2 - 1);
+							}
+						}
+						
 						//destroy particles
 						if life <= 0 {
 							if dead_part {
@@ -54,7 +76,7 @@ function advanced_part_system() constructor {
 		}
 	}
 	
-	//Particle drawing
+	//Particles drawing
 	function draw() {
 		if !ds_list_empty(particle_list) {
 			var _size = ds_list_size(particle_list);
@@ -65,9 +87,9 @@ function advanced_part_system() constructor {
 					if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						if (x_scale == 1 && x_scale == y_scale && angle == 0 && color == c_white && alpha == 1) {
-							draw_sprite(sprite, 0, x-part_width_half, y-part_height_half);
+							draw_sprite(sprite, subimg, x-part_width_half, y-part_height_half);
 						} else {
-							draw_sprite_ext(sprite, 0, x-part_width_half, y-part_height_half, x_scale, y_scale, angle, color, alpha);
+							draw_sprite_ext(sprite, subimg, x-part_width_half, y-part_height_half, x_scale, y_scale, angle, color, alpha);
 						}
 					}
 				}
@@ -112,13 +134,31 @@ function advanced_part_emitter(ps, x1, y1, x2, y2, gravity_point_x, gravity_poin
 	
 	function particle(part_) constructor {
 		emitter = other;
-		x = random_range(emitter.x_left,emitter.x_right);
-		y = random_range(emitter.y_top,emitter.y_down);
+		
 		color = part_.part_color;
 		alpha = 1;
+		
+		self.colors_enabled = part_.colors_enabled;
+		if colors_enabled {
+			self.color1 = part_.part_color1;
+			self.color2 = part_.part_color2;
+			self.color3 = part_.part_color3;
+			color = color1;
+		}
+		
+		self.alpha_blend_enabled = part_.alpha_blend_enabled;
+		if alpha_blend_enabled {
+			self.alpha1 = part_.part_alpha1;
+			self.alpha2 = part_.part_alpha2;
+			self.alpha3 = part_.part_alpha3;
+			alpha = alpha1;
+		}
+		
 		sprite = part_.part_sprite;
+		subimg = part_.part_subimg; if (part_.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
 		angle = random_range(part_.angle_min,part_.angle_max);
 		life = irandom_range(part_.part_time_min,part_.part_time_max);
+		life_max = life;
 		x_scale = random_range(part_.part_xscale_min,part_.part_xscale_max);
 		if part_.part_scale_equal {
 			y_scale = x_scale;
@@ -129,7 +169,9 @@ function advanced_part_emitter(ps, x1, y1, x2, y2, gravity_point_x, gravity_poin
 		part_height = part_.part_sprite_height * y_scale;
 		part_width_half = part_width / 2;
 		part_height_half = part_height / 2;
-		dead_part = part_.part_dead;
+		
+		x = random_range(emitter.x_left,emitter.x_right);
+		y = random_range(emitter.y_top,emitter.y_down);
 		direction = random_range(part_.part_direction_min,part_.part_direction_max);
 		speed = random_range(part_.part_speed_min,part_.part_speed_max);
 		gravity = 0;
@@ -137,12 +179,25 @@ function advanced_part_emitter(ps, x1, y1, x2, y2, gravity_point_x, gravity_poin
 		gravity_speed = part_.part_gravity_speed;
 		point_gravity = 0;
 		point_gravity_speed = part_.part_gravity_point_speed;
+		
+		dead_part = part_.part_dead;
 	}
 }
 
 function advanced_part_type() constructor {
 	part_sprite = s_pixel;
 	part_color = c_white;
+	
+	colors_enabled = false;
+	part_color1 = c_white;
+	part_color2 = c_white;
+	part_color3 = c_white;
+	
+	alpha_blend_enabled = false;
+	part_alpha1 = c_white;
+	part_alpha2 = c_white;
+	part_alpha3 = c_white;
+	
 	angle_min = 0;
 	angle_max = 359;
 	part_time_min = 60;
@@ -167,18 +222,30 @@ function advanced_part_type() constructor {
 	
 	part_dead = noone;
 	
-	function part_gravity(gravity_dir, gravity_speed, point_gravity_speed){
-		self.part_gravity_direction = gravity_dir;
-		self.part_gravity_speed = gravity_speed;
-		self.part_gravity_point_speed = point_gravity_speed;
+	function part_image(sprite, subimg, color, animate, stretch, random) {
+		self.part_sprite = sprite;
+		self.part_subimg = subimg;
+		self.part_color = color;
+		self.part_animate = animate;
+		self.part_stretch = stretch;
+		self.part_subimg_random = random;
 	}
 	
-	function part_life(life_min, life_max){
-		self.part_time_min = life_min;
-		self.part_time_max = life_max;
+	function part_colors(color1, color2, color3) {
+		self.colors_enabled = true;
+		self.part_color1 = color1;
+		self.part_color2 = color2;
+		self.part_color3 = color3;
 	}
 	
-	function part_transform(angle_min_, angle_max_, x_scale_min, x_scale_max, y_scale_min, y_scale_max, scale_equal){
+	function part_alpha_blend(alpha1, alpha2, alpha3) {
+		self.alpha_blend_enabled = true;
+		self.part_alpha1 = alpha1;
+		self.part_alpha2 = alpha2;
+		self.part_alpha3 = alpha3;
+	}
+	
+	function part_transform(angle_min_, angle_max_, x_scale_min, x_scale_max, y_scale_min, y_scale_max, scale_equal) {
 		self.angle_min = angle_min_;
 		self.angle_max = angle_max_;
 		self.part_xscale_min = x_scale_min;
@@ -188,12 +255,18 @@ function advanced_part_type() constructor {
 		self.part_yscale_max = y_scale_max;
 	}
 	
-	function part_image(sprite_, color_){
-		self.part_sprite = sprite_;
-		self.part_color = color_;
+	function part_life(life_min, life_max) {
+		self.part_time_min = life_min;
+		self.part_time_max = life_max;
 	}
 	
-	function part_move(direction_min, direction_max, speed_min, speed_max){
+	function part_gravity(gravity_dir, gravity_speed, point_gravity_speed) {
+		self.part_gravity_direction = gravity_dir;
+		self.part_gravity_speed = gravity_speed;
+		self.part_gravity_point_speed = point_gravity_speed;
+	}
+	
+	function part_move(direction_min, direction_max, speed_min, speed_max) {
 		self.part_direction_min = direction_min;
 		self.part_direction_max = direction_max;
 		self.part_speed_min = speed_min;
