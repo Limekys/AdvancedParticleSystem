@@ -92,8 +92,8 @@ function advanced_part_system() constructor {
 								var part = new particle(dead_part);
 								with(part) {
 									emitter = other.emitter;
-									part.x = x;
-									part.y = y;
+									x = other.x;
+									y = other.y;
 								}
 								ds_list_replace(other.particle_list, i, part);
 							} else {
