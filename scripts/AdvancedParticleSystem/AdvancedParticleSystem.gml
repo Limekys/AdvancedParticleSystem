@@ -2,8 +2,36 @@ function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
 	
+	//Camera check function
+	var cam = view_camera[0];
+	part_system_view_width = camera_get_view_width(cam);
+	part_system_view_height = camera_get_view_height(cam);
+	part_system_view_x = camera_get_view_x(cam);
+	part_system_view_y = camera_get_view_y(cam);
+	
+	function get_view(x, y, width, height) {
+		//return true if particle is in view
+		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
+			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
+	}
+	
+	//Deltatime function
+	part_system_deltatime = false;
+	
+	function enabledelta() {
+		if !instance_exists(oSteadyDeltaTime) {
+			instance_create_depth(0, 0, 9999, oSteadyDeltaTime);
+		}
+		part_system_deltatime = true;
+	}
+	
 	//Particles updating
 	function step() {
+		//update camera position info
+		var cam = view_camera[0];
+		part_system_view_x = camera_get_view_x(cam);
+		part_system_view_y = camera_get_view_y(cam);
+		
 		//calculate deltatime
 		var part_system_delta = part_system_deltatime ? global.dt_steady : 1;
 		
@@ -24,7 +52,7 @@ function advanced_part_system() constructor {
 							x_speed += lengthdir_x(gravity, gravity_direction);
 							y_speed += lengthdir_y(gravity, gravity_direction);
 						}
-						if point_gravity_speed != 0 {
+						if point_gravity_speed != 0 && emitter {
 							point_gravity += point_gravity_speed;
 							var gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
 							x_speed += lengthdir_x(point_gravity, gravity_dir);
@@ -61,9 +89,12 @@ function advanced_part_system() constructor {
 						//destroy particles
 						if life <= 0 {
 							if dead_part {
-								with(emitter) var part = new particle(other.dead_part);
-								part.x = x;
-								part.y = y;
+								var part = new particle(dead_part);
+								with(part) {
+									emitter = other.emitter;
+									part.x = x;
+									part.y = y;
+								}
 								ds_list_replace(other.particle_list, i, part);
 							} else {
 								ds_list_delete(other.particle_list, i);
@@ -86,106 +117,91 @@ function advanced_part_system() constructor {
 					//draw every particle if it is in view
 					if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
+						
+						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
+						
 						if (x_scale == 1 && x_scale == y_scale && angle == 0 && color == c_white && alpha == 1) {
 							draw_sprite(sprite, subimg, x-part_width_half, y-part_height_half);
 						} else {
 							draw_sprite_ext(sprite, subimg, x-part_width_half, y-part_height_half, x_scale, y_scale, angle, color, alpha);
 						}
+						
+						if additiveblend gpu_set_blendmode(bm_normal); //TEMPORARY
 					}
 				}
 			}
 		}
 	}
-	
-	//Camera check function
-	var cam = view_camera[0];
-	part_system_view_width = camera_get_view_width(cam);
-	part_system_view_height = camera_get_view_height(cam);
-	part_system_view_x = camera_get_view_x(cam);
-	part_system_view_y = camera_get_view_y(cam);
-	
-	function get_view(x, y, width, height) {
-		//return true if particle is in view
-		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
-			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
-	}
-	
-	//Deltatime function
-	part_system_deltatime = false;
-	
-	function enabledelta() {
-		if !instance_exists(oSteadyDeltaTime) {
-			instance_create_depth(0, 0, 9999, oSteadyDeltaTime);
-		}
-		part_system_deltatime = true;
-	}
 }
 
-function advanced_part_emitter(ps, x1, y1, x2, y2, gravity_point_x, gravity_point_y) constructor {
+//Basic particle
+function particle(part_type) constructor {
+	emitter = noone;
+		
+	color = part_type.part_color;
+	alpha = 1;
+		
+	self.colors_enabled = part_type.colors_enabled;
+	if colors_enabled {
+		self.color1 = part_type.part_color1;
+		self.color2 = part_type.part_color2;
+		self.color3 = part_type.part_color3;
+		color = color1;
+	}
+		
+	self.alpha_blend_enabled = part_type.alpha_blend_enabled;
+	if alpha_blend_enabled {
+		self.alpha1 = part_type.part_alpha1;
+		self.alpha2 = part_type.part_alpha2;
+		self.alpha3 = part_type.part_alpha3;
+		alpha = alpha1;
+	}
+		
+	self.additiveblend = part_type.part_additiveblend;
+		
+	sprite = part_type.part_sprite;
+	subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
+	angle = random_range(part_type.angle_min,part_type.angle_max);
+	life = irandom_range(part_type.part_time_min,part_type.part_time_max);
+	life_max = life;
+	x_scale = random_range(part_type.part_xscale_min,part_type.part_xscale_max);
+	if part_type.part_scale_equal {
+		y_scale = x_scale;
+	} else {
+		y_scale = random_range(part_type.part_yscale_min,part_type.part_yscale_max);
+	}
+	part_width = part_type.part_sprite_width * x_scale;
+	part_height = part_type.part_sprite_height * y_scale;
+	part_width_half = part_width / 2;
+	part_height_half = part_height / 2;
+		
+	self.x = 0;
+	self.y = 0;
+	direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
+	speed = random_range(part_type.part_speed_min,part_type.part_speed_max);
+	gravity = 0;
+	gravity_direction = part_type.part_gravity_direction;
+	gravity_speed = part_type.part_gravity_speed;
+	point_gravity = 0;
+	point_gravity_speed = part_type.part_gravity_point_speed;
+		
+	dead_part = part_type.part_dead;
+}
+
+function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y) constructor {
 	part_sys = ps;
 	
-	x_left = x1;
-	y_top = y1;
-	x_right = x2;
-	y_down = y2;
+	x_left = xmin;
+	x_right = xmax;
+	y_top = ymin;
+	y_down = ymax;
 	
 	point_gravity_x = gravity_point_x;
 	point_gravity_y = gravity_point_y;
-	
-	function particle(part_) constructor {
-		emitter = other;
-		
-		color = part_.part_color;
-		alpha = 1;
-		
-		self.colors_enabled = part_.colors_enabled;
-		if colors_enabled {
-			self.color1 = part_.part_color1;
-			self.color2 = part_.part_color2;
-			self.color3 = part_.part_color3;
-			color = color1;
-		}
-		
-		self.alpha_blend_enabled = part_.alpha_blend_enabled;
-		if alpha_blend_enabled {
-			self.alpha1 = part_.part_alpha1;
-			self.alpha2 = part_.part_alpha2;
-			self.alpha3 = part_.part_alpha3;
-			alpha = alpha1;
-		}
-		
-		sprite = part_.part_sprite;
-		subimg = part_.part_subimg; if (part_.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
-		angle = random_range(part_.angle_min,part_.angle_max);
-		life = irandom_range(part_.part_time_min,part_.part_time_max);
-		life_max = life;
-		x_scale = random_range(part_.part_xscale_min,part_.part_xscale_max);
-		if part_.part_scale_equal {
-			y_scale = x_scale;
-		} else {
-			y_scale = random_range(part_.part_yscale_min,part_.part_yscale_max);
-		}
-		part_width = part_.part_sprite_width * x_scale;
-		part_height = part_.part_sprite_height * y_scale;
-		part_width_half = part_width / 2;
-		part_height_half = part_height / 2;
-		
-		x = random_range(emitter.x_left,emitter.x_right);
-		y = random_range(emitter.y_top,emitter.y_down);
-		direction = random_range(part_.part_direction_min,part_.part_direction_max);
-		speed = random_range(part_.part_speed_min,part_.part_speed_max);
-		gravity = 0;
-		gravity_direction = part_.part_gravity_direction;
-		gravity_speed = part_.part_gravity_speed;
-		point_gravity = 0;
-		point_gravity_speed = part_.part_gravity_point_speed;
-		
-		dead_part = part_.part_dead;
-	}
 }
 
 function advanced_part_type() constructor {
-	part_sprite = s_pixel;
+	part_sprite = noone;
 	part_color = c_white;
 	
 	colors_enabled = false;
@@ -197,6 +213,8 @@ function advanced_part_type() constructor {
 	part_alpha1 = c_white;
 	part_alpha2 = c_white;
 	part_alpha3 = c_white;
+	
+	part_additiveblend = false;
 	
 	angle_min = 0;
 	angle_max = 359;
@@ -245,6 +263,10 @@ function advanced_part_type() constructor {
 		self.part_alpha3 = alpha3;
 	}
 	
+	function part_blend(additive) {
+		self.part_additiveblend = additive;
+	}
+	
 	function part_transform(angle_min_, angle_max_, x_scale_min, x_scale_max, y_scale_min, y_scale_max, scale_equal) {
 		self.angle_min = angle_min_;
 		self.angle_max = angle_max_;
@@ -274,12 +296,26 @@ function advanced_part_type() constructor {
 	}
 }
 
-function advanced_part_burst(ps, part_emit, part_, number) {
-	with(part_emit) {
-		repeat(number) {
-			var part = new particle(part_);
-			ds_list_add(ps.particle_list, part);
+function advanced_part_burst(ps, part_emit, part_type, number) {
+	repeat(number) {
+		var part = new particle(part_type);
+		with(part) {
+			emitter = part_emit;
+			x = random_range(emitter.x_left, emitter.x_right);
+			y = random_range(emitter.y_top, emitter.y_down);
 		}
+		ds_list_add(ps.particle_list, part);
+	}
+}
+
+function advanced_part_particles_create(ps, x, y, part_type, number) {
+	repeat(number) {
+		var part = new particle(part_type);
+		with(part) {
+			self.x = x;
+			self.y = y;
+		}
+		ds_list_add(ps.particle_list, part);
 	}
 }
 
