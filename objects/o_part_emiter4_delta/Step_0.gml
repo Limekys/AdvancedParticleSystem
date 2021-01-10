@@ -1,4 +1,4 @@
-advanced_part_emitter_burst(ps, part_emiter_, part_type_, global.dt_steady * 60 * 5);
+advanced_part_emitter_burst(ps, part_emiter_, part_type_, 10);
 
 //part_emiter_.point_gravity_x = oPointTarget.x;
 //part_emiter_.point_gravity_y = oPointTarget.y;

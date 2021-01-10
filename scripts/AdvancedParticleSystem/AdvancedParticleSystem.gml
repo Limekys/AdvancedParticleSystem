@@ -44,19 +44,19 @@ function advanced_part_system() constructor {
 					//update every particle
 					with(_particle) {
 						
-						var x_speed = lengthdir_x(speed, direction);
-						var y_speed = lengthdir_y(speed, direction);
+						var x_speed = dcos(direction) * speed; //lengthdir_x(speed, direction); //
+						var y_speed = -dsin(direction) * speed; //lengthdir_y(speed, direction); //
 						
 						if gravity_speed != 0 {
-							gravity += gravity_speed;
-							x_speed += lengthdir_x(gravity, gravity_direction);
-							y_speed += lengthdir_y(gravity, gravity_direction);
+							gravity += gravity_speed * part_system_delta;
+							x_speed += dcos(gravity_direction) * gravity; //lengthdir_x(gravity, gravity_direction); //
+							y_speed += -dsin(gravity_direction) * gravity; //lengthdir_y(gravity, gravity_direction); //
 						}
 						if point_gravity_speed != 0 && emitter {
 							point_gravity += point_gravity_speed;
 							var gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
-							x_speed += lengthdir_x(point_gravity, gravity_dir);
-							y_speed += lengthdir_y(point_gravity, gravity_dir);
+							x_speed += dcos(gravity_dir) * point_gravity; //lengthdir_x(point_gravity, gravity_dir); //
+							y_speed += -dsin(gravity_dir) * point_gravity; //lengthdir_y(point_gravity, gravity_dir); //
 						}
 						
 						x += x_speed * part_system_delta;
@@ -249,14 +249,14 @@ function advanced_part_type() constructor {
 		self.part_subimg_random = random;
 	}
 	
-	function part_colors(color1, color2, color3) {
+	function part_color3(color1, color2, color3) {
 		self.colors_enabled = true;
 		self.part_color1 = color1;
 		self.part_color2 = color2;
 		self.part_color3 = color3;
 	}
 	
-	function part_alpha_blend(alpha1, alpha2, alpha3) {
+	function part_alpha3(alpha1, alpha2, alpha3) {
 		self.alpha_blend_enabled = true;
 		self.part_alpha1 = alpha1;
 		self.part_alpha2 = alpha2;
@@ -310,7 +310,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		}
 	} else {
 		//Burst particles with deltatime (create numbers of particles within a second)
-		if (round(global.continuousDeltaTimer * 10) mod round(1 / number * 10)) == 0 {
+		if (round(global.continuousDeltaTimer * 10) mod max(1, round(1 / number * 10))) == 0 {
 			var part = new particle(part_type);
 			with(part) {
 				emitter = part_emit;
