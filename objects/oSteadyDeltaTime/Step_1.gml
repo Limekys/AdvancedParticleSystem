@@ -27,3 +27,11 @@ else
 
 // Assign internal delta time to global delta time affected by the time scale
 global.dt_steady = dt*scale;
+
+//---
+//Continuous timer (used for creating particles with deltatime)
+if global.continuousDeltaTimer >= 1.0 {
+	global.continuousDeltaTimer = 0;
+} else {
+	global.continuousDeltaTimer += global.dt_steady;
+}

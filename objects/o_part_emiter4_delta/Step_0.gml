@@ -1,13 +1,13 @@
-advanced_part_burst(ps, part_emiter_, part_type_, global.dt_steady * 60 * 5);
+advanced_part_emitter_burst(ps, part_emiter_, part_type_, global.dt_steady * 60 * 5);
 
 //part_emiter_.point_gravity_x = oPointTarget.x;
 //part_emiter_.point_gravity_y = oPointTarget.y;
 
 //move towards mouse
 if keyboard_check(vk_control)
-advanced_part_emit_region(part_emiter_, mouse_x-20, mouse_x+20, mouse_y-20, mouse_y+20, room_width-mouse_x, room_height-mouse_y);
+advanced_part_emitter_region(part_emiter_, mouse_x-20, mouse_x+20, mouse_y-20, mouse_y+20, room_width-mouse_x, room_height-mouse_y);
 
 if keyboard_check(vk_shift)
-advanced_part_emit_region(part_emiter_, x-20, x+20, y-20, y+20, mouse_x, mouse_y);
+advanced_part_emitter_region(part_emiter_, x-20, x+20, y-20, y+20, mouse_x, mouse_y);
 
 ps.step();
