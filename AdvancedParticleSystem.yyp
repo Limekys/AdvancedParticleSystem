@@ -16,6 +16,7 @@
     {"id":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"order":3,},
     {"id":{"name":"AdvancedParticleSystem","path":"scripts/AdvancedParticleSystem/AdvancedParticleSystem.yy",},"order":0,},
     {"id":{"name":"oControl","path":"objects/oControl/oControl.yy",},"order":1,},
+    {"id":{"name":"fSmall","path":"fonts/fSmall/fSmall.yy",},"order":10,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [

@@ -40,7 +40,7 @@ function advanced_part_system() constructor {
 			var _size = ds_list_size(particle_list);
 			for (var i = 0; i < _size; i++) {
 				var _particle = ds_list_find_value(particle_list, i);
-				if _particle {
+				if is_struct(_particle) {
 					//update every particle
 					with(_particle) {
 						
@@ -113,7 +113,7 @@ function advanced_part_system() constructor {
 			var _size = ds_list_size(particle_list);
 			for (var i = 0; i < _size; i++) {
 				var particle = ds_list_find_value(particle_list, i);
-				if particle {
+				if is_struct(particle) {
 					//draw every particle if it is in view
 					if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
@@ -143,17 +143,17 @@ function particle(part_type) constructor {
 		
 	self.colors_enabled = part_type.colors_enabled;
 	if colors_enabled {
-		self.color1 = part_type.part_color1;
-		self.color2 = part_type.part_color2;
-		self.color3 = part_type.part_color3;
+		self.color1 = part_type.part_color_1;
+		self.color2 = part_type.part_color_2;
+		self.color3 = part_type.part_color_3;
 		color = color1;
 	}
 		
 	self.alpha_blend_enabled = part_type.alpha_blend_enabled;
 	if alpha_blend_enabled {
-		self.alpha1 = part_type.part_alpha1;
-		self.alpha2 = part_type.part_alpha2;
-		self.alpha3 = part_type.part_alpha3;
+		self.alpha1 = part_type.part_alpha_1;
+		self.alpha2 = part_type.part_alpha_2;
+		self.alpha3 = part_type.part_alpha_3;
 		alpha = alpha1;
 	}
 		
@@ -205,14 +205,14 @@ function advanced_part_type() constructor {
 	part_color = c_white;
 	
 	colors_enabled = false;
-	part_color1 = c_white;
-	part_color2 = c_white;
-	part_color3 = c_white;
+	part_color_1 = c_white;
+	part_color_2 = c_white;
+	part_color_3 = c_white;
 	
 	alpha_blend_enabled = false;
-	part_alpha1 = c_white;
-	part_alpha2 = c_white;
-	part_alpha3 = c_white;
+	part_alpha_1 = c_white;
+	part_alpha_2 = c_white;
+	part_alpha_3 = c_white;
 	
 	part_additiveblend = false;
 	
@@ -251,16 +251,16 @@ function advanced_part_type() constructor {
 	
 	function part_color3(color1, color2, color3) {
 		self.colors_enabled = true;
-		self.part_color1 = color1;
-		self.part_color2 = color2;
-		self.part_color3 = color3;
+		self.part_color_1 = color1;
+		self.part_color_2 = color2;
+		self.part_color_3 = color3;
 	}
 	
 	function part_alpha3(alpha1, alpha2, alpha3) {
 		self.alpha_blend_enabled = true;
-		self.part_alpha1 = alpha1;
-		self.part_alpha2 = alpha2;
-		self.part_alpha3 = alpha3;
+		self.part_alpha_1 = alpha1;
+		self.part_alpha_2 = alpha2;
+		self.part_alpha_3 = alpha3;
 	}
 	
 	function part_blend(additive) {
