@@ -44,19 +44,19 @@ function advanced_part_system() constructor {
 					//update every particle
 					with(_particle) {
 						
-						var x_speed = dcos(direction) * speed; //lengthdir_x(speed, direction); //
-						var y_speed = -dsin(direction) * speed; //lengthdir_y(speed, direction); //
+						var x_speed = dcos(direction) * speed;
+						var y_speed = -dsin(direction) * speed;
 						
 						if gravity_speed != 0 {
 							gravity += gravity_speed * part_system_delta;
-							x_speed += dcos(gravity_direction) * gravity; //lengthdir_x(gravity, gravity_direction); //
-							y_speed += -dsin(gravity_direction) * gravity; //lengthdir_y(gravity, gravity_direction); //
+							x_speed += dcos(gravity_direction) * gravity;
+							y_speed += -dsin(gravity_direction) * gravity;
 						}
-						if point_gravity_speed != 0 && emitter {
+						if point_gravity_speed != 0 && emitter != noone {
 							point_gravity += point_gravity_speed;
 							var gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
-							x_speed += dcos(gravity_dir) * point_gravity; //lengthdir_x(point_gravity, gravity_dir); //
-							y_speed += -dsin(gravity_dir) * point_gravity; //lengthdir_y(point_gravity, gravity_dir); //
+							x_speed += dcos(gravity_dir) * point_gravity;
+							y_speed += -dsin(gravity_dir) * point_gravity;
 						}
 						
 						x += x_speed * part_system_delta;
@@ -115,7 +115,7 @@ function advanced_part_system() constructor {
 				var particle = ds_list_find_value(particle_list, i);
 				if is_struct(particle) {
 					//draw every particle if it is in view
-					if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
+					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
@@ -310,7 +310,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		}
 	} else {
 		//Burst particles with deltatime (create numbers of particles within a second)
-		if (round(global.continuousDeltaTimer * 10) mod max(1, round(1 / number * 10))) == 0 {
+		if (round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
 			var part = new particle(part_type);
 			with(part) {
 				emitter = part_emit;
