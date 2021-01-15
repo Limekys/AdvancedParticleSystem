@@ -88,7 +88,7 @@ function advanced_part_system() constructor {
 						
 						//destroy particles
 						if life <= 0 {
-							if dead_part {
+							if dead_part != noone {
 								var part = new particle(dead_part);
 								with(part) {
 									emitter = other.emitter;
@@ -198,6 +198,8 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, grav
 	
 	point_gravity_x = gravity_point_x;
 	point_gravity_y = gravity_point_y;
+	
+	static continuousTimer = 0;
 }
 
 function advanced_part_type() constructor {
@@ -310,7 +312,8 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		}
 	} else {
 		//Burst particles with deltatime (create numbers of particles within a second)
-		if (round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
+		part_emit.continuousTimer += global.dt_steady;
+		if (part_emit.continuousTimer >= 1 / number) { //(round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
 			var part = new particle(part_type);
 			with(part) {
 				emitter = part_emit;
@@ -318,6 +321,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 				y = random_range(emitter.y_top, emitter.y_down);
 			}
 			ds_list_add(ps.particle_list, part);
+			part_emit.continuousTimer = 0;
 		}
 	}
 }
