@@ -199,7 +199,7 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, grav
 	point_gravity_x = gravity_point_x;
 	point_gravity_y = gravity_point_y;
 	
-	static continuousTimer = 0;
+	static spawn_timer = 0;
 }
 
 function advanced_part_type() constructor {
@@ -312,8 +312,10 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		}
 	} else {
 		//Burst particles with deltatime (create numbers of particles within a second)
-		part_emit.continuousTimer += global.dt_steady;
-		if (part_emit.continuousTimer >= 1 / number) { //(round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
+		var spawn_interval = 1000 / number;
+		part_emit.spawn_timer += delta_time / 1000;
+		var repeat_count = part_emit.spawn_timer div spawn_interval;
+		repeat(repeat_count) { //if (part_emit.spawn_timer >= 1 / number) { //(round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
 			var part = new particle(part_type);
 			with(part) {
 				emitter = part_emit;
@@ -321,8 +323,8 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 				y = random_range(emitter.y_top, emitter.y_down);
 			}
 			ds_list_add(ps.particle_list, part);
-			part_emit.continuousTimer = 0;
 		}
+		part_emit.spawn_timer = part_emit.spawn_timer mod spawn_interval;
 	}
 }
 
