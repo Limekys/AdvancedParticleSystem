@@ -44,23 +44,23 @@ function advanced_part_system() constructor {
 					//update every particle
 					with(_particle) {
 						
-						var x_speed = dcos(direction) * speed;
-						var y_speed = -dsin(direction) * speed;
+						var x_speed = dcos(direction) * speed * part_system_delta;
+						var y_speed = -dsin(direction) * speed * part_system_delta;
 						
 						if gravity_speed != 0 {
 							gravity += gravity_speed * part_system_delta;
-							x_speed += dcos(gravity_direction) * gravity;
-							y_speed += -dsin(gravity_direction) * gravity;
+							x_speed += dcos(gravity_direction) * gravity * part_system_delta;
+							y_speed += -dsin(gravity_direction) * gravity * part_system_delta;
 						}
 						if point_gravity_speed != 0 && emitter != noone {
-							point_gravity += point_gravity_speed;
-							var gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
-							x_speed += dcos(gravity_dir) * point_gravity;
-							y_speed += -dsin(gravity_dir) * point_gravity;
+							point_gravity += point_gravity_speed * part_system_delta;;
+							var point_gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
+							x_speed += dcos(point_gravity_dir) * point_gravity * part_system_delta;
+							y_speed += -dsin(point_gravity_dir) * point_gravity * part_system_delta;
 						}
 						
-						x += x_speed * part_system_delta;
-						y += y_speed * part_system_delta;
+						x += x_speed;
+						y += y_speed;
 						
 						life -= part_system_delta;
 						
@@ -86,18 +86,18 @@ function advanced_part_system() constructor {
 							}
 						}
 						
-						//Changing size
-						if size_increase != 0 {
-							x_size += size_increase * part_system_delta;
-							y_size += size_increase * part_system_delta;
-							if (x_size <= 0) { life = 0; }
-						}
-						
 						//Changing angle
 						if angle_relative {
 							angle = direction;
 						} else if angle_increase != 0 {
 							angle += angle_increase * part_system_delta;
+						}
+						
+						//Changing size
+						if size_increase != 0 {
+							x_size += size_increase * part_system_delta;
+							y_size += size_increase * part_system_delta;
+							if (x_size <= 0) { life = 0; }
 						}
 						
 						//Destroy particles
@@ -243,11 +243,6 @@ function advanced_part_type() constructor {
 	
 	part_time_min = 60;
 	part_time_max = 90;
-	part_xscale_min = 1;
-	part_xscale_max = 1;
-	part_scale_equal = true;
-	part_yscale_min = 1;
-	part_yscale_max = 1;
 	
 	part_size_min = 1;
 	part_size_max = 1;
@@ -308,16 +303,6 @@ function advanced_part_type() constructor {
 		self.part_additiveblend = additive;
 	}
 	
-	function part_transform(angle_min_, angle_max_, x_scale_min, x_scale_max, y_scale_min, y_scale_max, scale_equal) {
-		self.part_angle_min = angle_min_;
-		self.part_angle_max = angle_max_;
-		self.part_xscale_min = x_scale_min;
-		self.part_xscale_max = x_scale_max;
-		self.part_yscale_min = y_scale_min;
-		self.part_yscale_max = y_scale_max;
-		self.part_scale_equal = scale_equal;
-	}
-	
 	function part_size(size_min, size_max, size_incr, size_wiggle) {
 		self.part_size_min = size_min;
 		self.part_size_max = size_max;
@@ -347,13 +332,6 @@ function advanced_part_type() constructor {
 		self.part_gravity_direction = gravity_dir;
 		self.part_gravity_speed = gravity_speed;
 		self.part_gravity_point_speed = point_gravity_speed;
-	}
-	
-	function part_move(direction_min, direction_max, speed_min, speed_max) {
-		self.part_direction_min = direction_min;
-		self.part_direction_max = direction_max;
-		self.part_speed_min = speed_min;
-		self.part_speed_max = speed_max;
 	}
 	
 	function part_speed(speed_min, speed_max, speed_incr, speed_wiggle) {

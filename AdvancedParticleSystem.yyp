@@ -45,7 +45,7 @@
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":0,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Main.yy","order":1,"resourceVersion":"1.0","name":"Main","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Rooms.yy","order":4,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/DEMO/Rooms.yy","order":12,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/DEMO.yy","order":3,"resourceVersion":"1.0","name":"DEMO","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
