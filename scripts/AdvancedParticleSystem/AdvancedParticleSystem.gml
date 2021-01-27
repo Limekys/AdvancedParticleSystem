@@ -86,18 +86,28 @@ function advanced_part_system() constructor {
 							}
 						}
 						
-						//Changing angle
+						//Changing direction (direction_increase)
+						if direction_increase != 0 {
+							direction += direction_increase * part_system_delta;
+						}
+						
+						//Changing speed (speed_increase)
+						if speed_increase != 0 {
+							speed += speed_increase * part_system_delta;
+						}
+						
+						//Changing angle (angle_increase, angle_relative)
 						if angle_relative {
 							angle = direction;
 						} else if angle_increase != 0 {
 							angle += angle_increase * part_system_delta;
 						}
 						
-						//Changing size
+						//Changing size (size_increase)
 						if size_increase != 0 {
 							x_size += size_increase * part_system_delta;
 							y_size += size_increase * part_system_delta;
-							if (x_size <= 0) { life = 0; }
+							if (x_size <= 0 or y_size <= 0) { life = 0; }
 						}
 						
 						//Destroy particles
@@ -134,10 +144,10 @@ function advanced_part_system() constructor {
 						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						
-						if (x_size == 1 && x_size == y_size && angle == 0 && color == c_white && alpha == 1) {
+						if (x_size == 1 && y_size == 1 && angle == 0 && color == c_white && alpha == 1) {
 							draw_sprite(sprite, subimg, x-part_width_half, y-part_height_half);
 						} else {
-							draw_sprite_ext(sprite, subimg, x-part_width_half, y-part_height_half, x_size * x_scale, y_size * y_scale, angle, color, alpha);
+							draw_sprite_ext(sprite, subimg, x-part_width_half, y-part_height_half, x_size, y_size, angle, color, alpha);
 						}
 						
 						if additiveblend gpu_set_blendmode(bm_normal); //TEMPORARY
@@ -175,10 +185,10 @@ function particle(part_type) constructor {
 	y_size = x_size;
 	size_increase = part_type.part_size_increase;
 	size_wiggle = part_type.part_size_wiggle;
-	x_scale = part_type.part_xscale;
-	y_scale = part_type.part_yscale;
-	part_width = part_type.part_sprite_width * x_size * x_scale;
-	part_height = part_type.part_sprite_height * y_size * y_scale;
+	x_size *= part_type.part_xscale;
+	y_size *= part_type.part_yscale;
+	part_width = part_type.part_sprite_width * x_size;
+	part_height = part_type.part_sprite_height * y_size;
 	part_width_half = part_width / 2;
 	part_height_half = part_height / 2;
 	
