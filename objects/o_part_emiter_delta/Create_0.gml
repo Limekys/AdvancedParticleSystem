@@ -1,6 +1,6 @@
 ps = new advanced_part_system();
 ps.enabledelta();
-part_emiter_ = new advanced_part_emitter(ps, x-20,x+20,y-20,y+20,x,y);
+part_emiter_ = new advanced_part_emitter(ps, x-20, x+20, y-20, y+20, x, y, aps_shape.rectangle, aps_distr.linear);
 
 part_type1 = new advanced_part_type();
 part_type1.part_gravity(270, 0.1 * 60 * 60, 0);
