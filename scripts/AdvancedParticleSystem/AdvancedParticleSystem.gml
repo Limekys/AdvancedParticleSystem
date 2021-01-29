@@ -1,3 +1,16 @@
+enum aps_shape {
+	rectangle,
+	ellipse,
+	diamond,
+	line
+}
+
+enum aps_distr {
+	linear,
+	gaussian,
+	invgaussian
+}
+
 function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
@@ -92,7 +105,7 @@ function advanced_part_system() constructor {
 						}
 						
 						//Changing speed (speed_increase)
-						if speed_increase != 0 {
+						if speed_increase != 0 && speed > 0 {
 							speed += speed_increase * part_system_delta;
 						}
 						
@@ -142,6 +155,8 @@ function advanced_part_system() constructor {
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						
+						if sprite == noone break;
+						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						
 						if (x_size == 1 && y_size == 1 && angle == 0 && color == c_white && alpha == 1) {
@@ -172,7 +187,7 @@ function particle(part_type) constructor {
 	direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
 	direction_increase = part_type.part_direction_increase;
 	direction_wiggle = part_type.part_direction_wiggle;
-	speed = random_range(part_type.part_speed_min,part_type.part_speed_max);
+	speed = max(0, random_range(part_type.part_speed_min,part_type.part_speed_max));
 	speed_increase = part_type.part_speed_increase;
 	speed_wiggle = part_type.part_speed_wiggle;
 	gravity = 0;
@@ -221,7 +236,7 @@ function particle(part_type) constructor {
 	dead_part = part_type.part_dead;
 }
 
-function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y) constructor {
+function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y, shape, distribution) constructor {
 	part_sys = ps;
 	
 	x_left = xmin;
@@ -232,12 +247,19 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, grav
 	point_gravity_x = gravity_point_x;
 	point_gravity_y = gravity_point_y;
 	
+	emitter_shape = shape;
+	emitter_distr = distribution;
+	
 	static spawn_timer = 0;
 }
 
 function advanced_part_type() constructor {
 	part_sprite = noone;
+	part_subimg = 0;
 	part_color = c_white;
+	part_animate = false;
+	part_stretch = false;
+	part_subimg_random = false;
 	
 	colors_enabled = false;
 	part_color_1 = c_white;
@@ -251,8 +273,8 @@ function advanced_part_type() constructor {
 	
 	part_additiveblend = false;
 	
-	part_time_min = 60;
-	part_time_max = 90;
+	part_time_min = room_speed;
+	part_time_max = room_speed*2;
 	
 	part_size_min = 1;
 	part_size_max = 1;
@@ -262,7 +284,7 @@ function advanced_part_type() constructor {
 	part_yscale = 1;
 	
 	part_angle_min = 0;
-	part_angle_max = 359;
+	part_angle_max = 0;
 	part_angle_increase = 0;
 	part_angle_wiggle = 0;
 	part_angle_relative = false;
@@ -270,13 +292,13 @@ function advanced_part_type() constructor {
 	part_sprite_width = sprite_get_width(part_sprite);
 	part_sprite_height = sprite_get_height(part_sprite);
 	
-	part_speed_min = 1;
-	part_speed_max = 2;
+	part_speed_min = 0;
+	part_speed_max = 0;
 	part_speed_increase = 0;
 	part_speed_wiggle = 0;
 	
 	part_direction_min = 0;
-	part_direction_max = 359;
+	part_direction_max = 0;
 	part_direction_increase = 0;
 	part_direction_wiggle = 0;
 	
@@ -360,33 +382,36 @@ function advanced_part_type() constructor {
 }
 
 function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
-	if !ps.part_system_deltatime {
-		//Burst particles without deltatime (create numbers of particles each step)
-		repeat(number) {
-			var part = new particle(part_type);
-			with(part) {
-				emitter = part_emit;
-				x = random_range(emitter.x_left, emitter.x_right);
-				y = random_range(emitter.y_top, emitter.y_down);
+	//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
+	//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
+	var spawn_interval = 1000 / number;
+	part_emit.spawn_timer += delta_time / 1000;
+	var repeat_count = ps.part_system_deltatime ? (part_emit.spawn_timer div spawn_interval) : number;
+	
+	repeat(repeat_count) {
+		var part = new particle(part_type);
+		with(part) {
+			emitter = part_emit;
+			switch(emitter.emitter_shape) {
+				default:
+				case aps_shape.rectangle: 
+					x = random_range(emitter.x_left, emitter.x_right);
+					y = random_range(emitter.y_top, emitter.y_down);
+				break; 
+				case aps_shape.ellipse:
+					var A = (emitter.x_right - emitter.x_left) / 2;
+					var B = (emitter.y_down - emitter.y_top) / 2;
+					var X = random_range(-A, A);
+					var Y = sqrt(B*B * (1 - X*X / (A*A)));
+					x = X + emitter.x_left + A;
+					y = random_range(-Y, Y) + emitter.y_top + B;
+				break;
 			}
-			ds_list_add(ps.particle_list, part);
 		}
-	} else {
-		//Burst particles with deltatime (create numbers of particles within a second)
-		var spawn_interval = 1000 / number;
-		part_emit.spawn_timer += delta_time / 1000;
-		var repeat_count = part_emit.spawn_timer div spawn_interval;
-		repeat(repeat_count) { //if (part_emit.spawn_timer >= 1 / number) { //(round(global.continuousDeltaTimer * 10) mod ceil(1 / number * 10)) == 0 {
-			var part = new particle(part_type);
-			with(part) {
-				emitter = part_emit;
-				x = random_range(emitter.x_left, emitter.x_right);
-				y = random_range(emitter.y_top, emitter.y_down);
-			}
-			ds_list_add(ps.particle_list, part);
-		}
-		part_emit.spawn_timer = part_emit.spawn_timer mod spawn_interval;
+		ds_list_add(ps.particle_list, part);
 	}
+	
+	part_emit.spawn_timer = part_emit.spawn_timer mod spawn_interval;
 }
 
 function advanced_part_particles_create(ps, x, y, part_type, number) {
@@ -400,7 +425,7 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 	}
 }
 
-function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y) {
+function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y, shape, distribution) {
 	with(part_emit) {
 		x_left = xmin;
 		y_top = ymin;
@@ -409,6 +434,9 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, gravity
 	
 		point_gravity_x = gravity_point_x;
 		point_gravity_y = gravity_point_y;
+		
+		emitter_shape = shape;
+		emitter_distr = distribution;
 	}
 }
 

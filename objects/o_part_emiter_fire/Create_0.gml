@@ -1,5 +1,5 @@
 ps = new advanced_part_system();
-em = new advanced_part_emitter(ps, x-4, x+4, y-2, y+2, x, y);
+em = new advanced_part_emitter(ps, x-4, x+4, y-2, y+2, x, y, aps_shape.rectangle, aps_distr.linear);
 
 fire_part = new advanced_part_type();
 with(fire_part) {
