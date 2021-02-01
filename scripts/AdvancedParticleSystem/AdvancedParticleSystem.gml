@@ -45,18 +45,19 @@ function advanced_part_system() constructor {
 		part_system_view_x = camera_get_view_x(cam);
 		part_system_view_y = camera_get_view_y(cam);
 		
-		//calculate deltatime
+		//Calculate deltatime
 		var part_system_delta = part_system_deltatime ? global.dt_steady : 1;
 		
-		//update particles
+		//Update particles
 		if !ds_list_empty(particle_list) {
 			var _size = ds_list_size(particle_list);
 			for (var i = 0; i < _size; i++) {
 				var _particle = ds_list_find_value(particle_list, i);
 				if is_struct(_particle) {
-					//update every particle
+					//Update every particle
 					with(_particle) {
 						
+						//Moving
 						var x_speed = dcos(direction) * speed * part_system_delta;
 						var y_speed = -dsin(direction) * speed * part_system_delta;
 						
@@ -155,7 +156,7 @@ function advanced_part_system() constructor {
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						
-						if sprite == noone break;
+						if sprite == noone or alpha == 0 break;
 						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						
@@ -384,9 +385,9 @@ function advanced_part_type() constructor {
 function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
 	//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
-	var spawn_interval = 1000 / number;
-	part_emit.spawn_timer += delta_time / 1000;
-	var repeat_count = ps.part_system_deltatime ? (part_emit.spawn_timer div spawn_interval) : number;
+	var spawn_interval = 1 / number;
+	part_emit.spawn_timer += global.dt_steady;
+	var repeat_count = ps.part_system_deltatime ? floor(part_emit.spawn_timer / spawn_interval) : number;
 	
 	repeat(repeat_count) {
 		var part = new particle(part_type);
