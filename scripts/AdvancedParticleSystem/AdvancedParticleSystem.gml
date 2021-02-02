@@ -11,9 +11,13 @@ enum aps_distr {
 	invgaussian
 }
 
+//#macro aps_update_interval 2 //not completed
+
 function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
+	
+	//update_interval = aps_update_interval; //not completed
 	
 	//Camera check function
 	var cam = view_camera[0];
@@ -40,7 +44,10 @@ function advanced_part_system() constructor {
 	
 	//Particles updating
 	function step() {
-		//update camera position info
+		
+		//if (update_interval < aps_update_interval) { update_interval++; } else { update_interval = 1; } //not completed
+		
+		//Update camera position info
 		var cam = view_camera[0];
 		part_system_view_x = camera_get_view_x(cam);
 		part_system_view_y = camera_get_view_y(cam);
@@ -115,6 +122,12 @@ function advanced_part_system() constructor {
 							angle = direction;
 						} else if angle_increase != 0 {
 							angle += angle_increase * part_system_delta;
+						}
+						if angle_wiggle != 0 { //not completed
+							//angle += sin(life * pi*2) * angle_wiggle * 0.5;
+							
+							//EaseLinear(inputvalue,outputmin,outputmax,inputmax)
+							//var ang = argument2 * argument0 / argument3 + argument1;
 						}
 						
 						//Changing size (size_increase)
@@ -407,6 +420,13 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 					x = X + emitter.x_left + A;
 					y = random_range(-Y, Y) + emitter.y_top + B;
 				break;
+				case aps_shape.line:
+					var A = (emitter.x_right - emitter.x_left) / 2;
+					var B = (emitter.y_down - emitter.y_top) / 2;
+					var X = random_range(-A, A);
+					x = X + emitter.x_left + A;
+					y = X / ((emitter.x_right - emitter.x_left) / (emitter.y_down - emitter.y_top)) + emitter.y_top + B;
+				break; 
 			}
 		}
 		ds_list_add(ps.particle_list, part);
