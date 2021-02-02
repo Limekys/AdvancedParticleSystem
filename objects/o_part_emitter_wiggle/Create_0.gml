@@ -1,5 +1,5 @@
 ps = new advanced_part_system();
-pe = new advanced_part_emitter(ps, x-20 - 96, x+20 -96 + 40, y-20, y+20, x, y, aps_shape.ellipse, aps_distr.linear);
+pe = new advanced_part_emitter(ps, x-20 - 96, x+20 -96 + 40, y-20, y+20, aps_shape.ellipse, aps_distr.linear);
 
 part_type1 = new advanced_part_type();
 with(part_type1) {

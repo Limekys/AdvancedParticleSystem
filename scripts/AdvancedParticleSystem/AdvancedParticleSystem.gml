@@ -73,9 +73,9 @@ function advanced_part_system() constructor {
 							x_speed += dcos(gravity_direction) * gravity * part_system_delta;
 							y_speed += -dsin(gravity_direction) * gravity * part_system_delta;
 						}
-						if point_gravity_speed != 0 && emitter != noone {
+						if point_gravity_speed != 0 {
 							point_gravity += point_gravity_speed * part_system_delta;;
-							var point_gravity_dir = point_direction(x, y, emitter.point_gravity_x, emitter.point_gravity_y);
+							var point_gravity_dir = point_direction(x, y, point_gravity_x, point_gravity_y);
 							x_speed += dcos(point_gravity_dir) * point_gravity * part_system_delta;
 							y_speed += -dsin(point_gravity_dir) * point_gravity * part_system_delta;
 						}
@@ -208,7 +208,9 @@ function particle(part_type) constructor {
 	gravity_direction = part_type.part_gravity_direction;
 	gravity_speed = part_type.part_gravity_speed;
 	point_gravity = 0;
-	point_gravity_speed = part_type.part_gravity_point_speed;
+	point_gravity_x = part_type.part_point_gravity_x;
+	point_gravity_y = part_type.part_point_gravity_y;
+	point_gravity_speed = part_type.part_point_gravity_speed;
 	
 	x_size = random_range(part_type.part_size_min,part_type.part_size_max);
 	y_size = x_size;
@@ -250,16 +252,13 @@ function particle(part_type) constructor {
 	dead_part = part_type.part_dead;
 }
 
-function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y, shape, distribution) constructor {
+function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
 	part_sys = ps;
 	
 	x_left = xmin;
 	x_right = xmax;
 	y_top = ymin;
 	y_down = ymax;
-	
-	point_gravity_x = gravity_point_x;
-	point_gravity_y = gravity_point_y;
 	
 	emitter_shape = shape;
 	emitter_distr = distribution;
@@ -318,7 +317,10 @@ function advanced_part_type() constructor {
 	
 	part_gravity_direction = 0;
 	part_gravity_speed = 0;
-	part_gravity_point_speed = 0;
+	
+	part_point_gravity_x = 0;
+	part_point_gravity_y = 0;
+	part_point_gravity_speed = 0;
 	
 	part_dead = noone;
 	
@@ -374,10 +376,15 @@ function advanced_part_type() constructor {
 		self.part_time_max = life_max;
 	}
 	
-	function part_gravity(gravity_dir, gravity_speed, point_gravity_speed) {
+	function part_gravity(gravity_amount, gravity_dir) {
+		self.part_gravity_speed = gravity_amount;
 		self.part_gravity_direction = gravity_dir;
-		self.part_gravity_speed = gravity_speed;
-		self.part_gravity_point_speed = point_gravity_speed;
+	}
+	
+	function part_point_gravity(point_gravity_amount, point_gravity_x, point_gravity_y) {
+		self.part_point_gravity_speed = point_gravity_amount;
+		self.part_point_gravity_x = point_gravity_x;
+		self.part_point_gravity_y = point_gravity_y;
 	}
 	
 	function part_speed(speed_min, speed_max, speed_incr, speed_wiggle) {
