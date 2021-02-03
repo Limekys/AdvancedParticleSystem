@@ -1,9 +1,9 @@
 ps = new advanced_part_system();
 
-part_emiter_ = new advanced_part_emitter(ps, x-20, x+20, y-20, y+20, aps_shape.rectangle, aps_distr.linear);
+pe = new advanced_part_emitter(ps, x-20, x+20, y-20, y+20, aps_shape.rectangle, aps_distr.linear);
 
-part_type1 = new advanced_part_type();
-with(part_type1) {
+pt1 = new advanced_part_type();
+with(pt1) {
 	part_gravity(0.1, 270);
 	part_life(60, 120);
 	part_size(1, 1, 0, 0);

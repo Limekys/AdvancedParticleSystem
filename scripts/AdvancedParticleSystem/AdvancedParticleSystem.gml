@@ -193,7 +193,7 @@ function particle(part_type) constructor {
 	
 	sprite = part_type.part_sprite;
 	subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
-	life = irandom_range(part_type.part_time_min,part_type.part_time_max);
+	life = random_range(part_type.part_time_min,part_type.part_time_max);
 	life_max = life;
 	
 	x = 0;
@@ -262,8 +262,6 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) 
 	
 	emitter_shape = shape;
 	emitter_distr = distribution;
-	
-	static spawn_timer = 0;
 }
 
 function advanced_part_type() constructor {
@@ -323,6 +321,8 @@ function advanced_part_type() constructor {
 	part_point_gravity_speed = 0;
 	
 	part_dead = noone;
+	
+	static spawn_timer = 0;
 	
 	function part_image(sprite, subimg, color, animate, stretch, random) {
 		self.part_sprite = sprite;
@@ -406,8 +406,8 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
 	//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
 	var spawn_interval = 1 / number;
-	if (ps.part_system_deltatime == true) part_emit.spawn_timer += global.dt_steady;
-	var repeat_count = ps.part_system_deltatime ? floor(part_emit.spawn_timer / spawn_interval) : number;
+	if (ps.part_system_deltatime == true) part_type.spawn_timer += global.dt_steady;
+	var repeat_count = ps.part_system_deltatime ? floor(part_type.spawn_timer / spawn_interval) : number;
 	
 	repeat(repeat_count) {
 		var part = new particle(part_type);
@@ -439,7 +439,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		ds_list_add(ps.particle_list, part);
 	}
 	
-	part_emit.spawn_timer = part_emit.spawn_timer mod spawn_interval;
+	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
 }
 
 function advanced_part_particles_create(ps, x, y, part_type, number) {

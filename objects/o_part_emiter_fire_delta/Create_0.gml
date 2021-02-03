@@ -9,7 +9,7 @@ with(fire_part) {
 	//looks
 	part_image(sFireParticles, 0, c_white, false, false, true);
 	part_size(0.05, 0.2, -0.001 * 60, 0);
-	part_orientation(0, 359, 1 * 60, 0, false);
+	part_orientation(0, 359, 2 * 60, 0, false);
 	part_color3(c_white, c_yellow, c_red);
 	part_alpha3(1, 1, 0);
 	part_blend(true);
