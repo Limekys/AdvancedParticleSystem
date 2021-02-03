@@ -406,7 +406,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
 	//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
 	var spawn_interval = 1 / number;
-	part_emit.spawn_timer += global.dt_steady;
+	if (ps.part_system_deltatime == true) part_emit.spawn_timer += global.dt_steady;
 	var repeat_count = ps.part_system_deltatime ? floor(part_emit.spawn_timer / spawn_interval) : number;
 	
 	repeat(repeat_count) {
