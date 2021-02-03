@@ -453,15 +453,12 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 	}
 }
 
-function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, gravity_point_x, gravity_point_y, shape, distribution) {
+function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, distribution) {
 	with(part_emit) {
 		x_left = xmin;
 		y_top = ymin;
 		x_right = xmax;
 		y_down = ymax;
-	
-		point_gravity_x = gravity_point_x;
-		point_gravity_y = gravity_point_y;
 		
 		emitter_shape = shape;
 		emitter_distr = distribution;
