@@ -60,7 +60,7 @@
     "eventStubScript": null,
     "parent": {"name":"sParticleSmoke","path":"sprites/sParticleSmoke/sParticleSmoke.yy",},
     "resourceVersion": "1.3",
-    "name": "sParticleSmoke",
+    "name": "",
     "tags": [],
     "resourceType": "GMSequence",
   },

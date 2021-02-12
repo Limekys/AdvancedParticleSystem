@@ -17,6 +17,8 @@ function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
 	
+	particle_system_debug_mode = false;
+	
 	//update_interval = aps_update_interval; //not completed
 	
 	//Camera check function
@@ -137,16 +139,44 @@ function advanced_part_system() constructor {
 							if (x_size <= 0 or y_size <= 0) { life = 0; }
 						}
 						
+						//Step particles // NOT COMPLETED! //
+						if part_type.part_step_number != 0 {
+							//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
+							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
+							var spawn_interval = 1 / part_type.part_step_number;
+							if (other.part_system_deltatime == true) part_type.spawn_timer += global.dt_steady;
+							var repeat_count = other.part_system_deltatime ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
+	
+							repeat(repeat_count) {
+								var part = new particle(part_type.part_step_type);
+								with(part) {
+									x = other.x;
+									y = other.y;
+								}
+								ds_list_add(other.particle_list, part);
+								part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
+							}
+						}
+						
 						//Destroy particles
 						if life <= 0 {
-							if dead_part != noone {
-								var part = new particle(dead_part);
+							if death_part != noone {
+								var part = new particle(death_part);
 								with(part) {
 									emitter = other.emitter;
 									x = other.x;
 									y = other.y;
 								}
 								ds_list_replace(other.particle_list, i, part);
+								repeat(death_number-1) {
+									var part = new particle(death_part);
+									with(part) {
+										emitter = other.emitter;
+										x = other.x;
+										y = other.y;
+									}
+									ds_list_add(other.particle_list, part);
+								}
 							} else {
 								ds_list_delete(other.particle_list, i);
 								i--;
@@ -190,6 +220,7 @@ function advanced_part_system() constructor {
 //Basic particle
 function particle(part_type) constructor {
 	emitter = noone;
+	self.part_type = part_type;
 	
 	sprite = part_type.part_sprite;
 	subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
@@ -249,7 +280,8 @@ function particle(part_type) constructor {
 		
 	self.additiveblend = part_type.part_additiveblend;
 		
-	dead_part = part_type.part_dead;
+	death_part = part_type.part_death_type;
+	death_number = part_type.part_death_number;
 }
 
 function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
@@ -320,9 +352,13 @@ function advanced_part_type() constructor {
 	part_point_gravity_y = 0;
 	part_point_gravity_speed = 0;
 	
-	part_dead = noone;
+	part_death_number = 0;
+	part_death_type = noone;
 	
-	static spawn_timer = 0;
+	part_step_number = 0;
+	part_step_type = noone;
+	
+	spawn_timer = 0;
 	
 	function part_image(sprite, subimg, color, animate, stretch, random) {
 		self.part_sprite = sprite;
@@ -400,11 +436,21 @@ function advanced_part_type() constructor {
 		self.part_direction_increase = dir_incr;
 		self.part_direction_wiggle = dir_wiggle;
 	}
+	
+	function part_step(step_number, step_type) {
+		self.part_step_number = step_number;
+		self.part_step_type = step_type;
+	}
+	
+	function part_death(death_number, death_type) {
+		self.part_death_number = death_number;
+		self.part_death_type = death_type;
+	}
 }
 
 function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
-	//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
-	//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
+	// WITH DELTATIME		// Burst particles with deltatime (create numbers of particles within a second)
+	// WITHOUT DELTATIME	// And burst particles without deltatime (create numbers of particles each step)
 	var spawn_interval = 1 / number;
 	if (ps.part_system_deltatime == true) part_type.spawn_timer += global.dt_steady;
 	var repeat_count = ps.part_system_deltatime ? floor(part_type.spawn_timer / spawn_interval) : number;
