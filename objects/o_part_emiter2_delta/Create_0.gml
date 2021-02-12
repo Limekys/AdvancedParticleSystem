@@ -1,6 +1,7 @@
-part_sys = new advanced_part_system();
-part_sys.enabledelta();
-part_emitter1 = new advanced_part_emitter(part_sys, x-20, x+20, y, y, aps_shape.rectangle, aps_distr.linear);
+ps = new advanced_part_system();
+ps.particle_system_debug_mode = global.particles_debug_mode;
+ps.enabledelta();
+part_emitter1 = new advanced_part_emitter(ps, x-20, x+20, y, y, aps_shape.rectangle, aps_distr.linear);
 
 part_type1 = new advanced_part_type();
 with(part_type1) {
@@ -14,7 +15,7 @@ with(part_type1) {
 	part_alpha3(0, 1, 0);
 }
 
-part_emitter2 = new advanced_part_emitter(part_sys, x-12, x+12, y, y, aps_shape.rectangle, aps_distr.linear);
+part_emitter2 = new advanced_part_emitter(ps, x-12, x+12, y, y, aps_shape.rectangle, aps_distr.linear);
 part_type2 = new advanced_part_type();
 with(part_type2) {
 	part_life(30 / 60, 60 / 60);

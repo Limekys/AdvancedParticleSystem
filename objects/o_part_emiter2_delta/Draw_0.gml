@@ -1,2 +1,2 @@
 /// @desc 
-part_sys.draw();
+ps.draw();

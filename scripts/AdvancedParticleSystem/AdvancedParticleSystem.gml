@@ -16,6 +16,7 @@ enum aps_distr {
 function advanced_part_system() constructor {
 	
 	particle_list = ds_list_create();
+	emitters_list = ds_list_create();
 	
 	particle_system_debug_mode = false;
 	
@@ -214,6 +215,23 @@ function advanced_part_system() constructor {
 				}
 			}
 		}
+		
+		//Draw debug info
+		if particle_system_debug_mode && !ds_list_empty(emitters_list) {
+			var _def_col = draw_get_color();
+			draw_set_color(c_red);
+			var _size = ds_list_size(emitters_list);
+			for (var i = 0; i < _size; i++) {
+				var emitter = ds_list_find_value(emitters_list, i);
+				if is_struct(emitter) {
+					with(emitter) {
+						draw_rectangle(x_left, y_top, x_right, y_down, true);
+						draw_line(x_left, y_top, x_right, y_down);
+					}
+				}
+			}
+			draw_set_color(_def_col);
+		}
 	}
 }
 
@@ -294,6 +312,8 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) 
 	
 	emitter_shape = shape;
 	emitter_distr = distribution;
+	
+	ds_list_add(ps.emitters_list, self);
 }
 
 function advanced_part_type() constructor {
@@ -512,6 +532,9 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 }
 
 function advanced_part_system_destroy(id) {
-	with(id) ds_list_destroy(particle_list);
+	with(id) {
+		ds_list_destroy(particle_list);
+		ds_list_destroy(emitters_list);
+	}
 	delete id;
 }

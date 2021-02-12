@@ -9,3 +9,7 @@ show_debug_overlay(true);
 
 end_game_when_low_fps = false;
 alarm[0] = 60;
+
+win_h = window_get_height();
+
+global.particles_debug_mode = false;

@@ -8,8 +8,8 @@ with(boom_part) {
 	//lifetime
 	part_life(60 / 60, 120 / 60);
 	//looks
-	part_image(sFirework, 0, c_white, false, false, true);
-	part_size(0.02, 0.05, -0.00025 * 60, 0);
+	part_image(sFirework2, 0, c_white, false, false, true);
+	part_size(0.01, 0.025, 0.0001 * 60, 0);
 	part_orientation(0, 360, 0, 0, false);
 	part_alpha3(0.75, 1, 0);
 	part_blend(true);
