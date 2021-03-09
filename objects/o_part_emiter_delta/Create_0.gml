@@ -15,7 +15,6 @@ with(part_type1) {
 		function() {
 			if collision_point(x, y, oPointTarget, true, false) {
 				color = c_red;
-				//size_increase = 10;
 				sprite = s_heart;
 			}
 		}

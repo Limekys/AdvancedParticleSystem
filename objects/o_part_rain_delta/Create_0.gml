@@ -11,7 +11,7 @@ with(water_drops) {
 	part_life(1, 1);
 	part_image(s_pixel, 0, c_aqua, false, false, false);
 	part_scale(0.5, 0.25);
-	part_size(0.5, 0.5, 0, 0);
+	part_size(0.25, 0.5, 0, 0);
 	part_orientation(0, 360, 0, 0, true);
 	part_scale(1, 2);
 	part_alpha3(0.5, 0.5, 0);
@@ -30,6 +30,7 @@ with(water) {
 	part_life(10, 100);
 	part_image(s_pixel, 0, c_aqua, false, false, false);
 	part_scale(0.5, 5);
+	part_size(0.5, 1, 0, 0);
 	part_alpha3(0.5, 0.5, 0.5);
 	part_death(5, other.water_drops);
 	part_step_function(
