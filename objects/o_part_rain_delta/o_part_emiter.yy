@@ -1,8 +1,5 @@
 {
-  "spriteId": {
-    "name": "s_heart",
-    "path": "sprites/s_heart/s_heart.yy",
-  },
+  "spriteId": null,
   "solid": false,
   "visible": true,
   "spriteMaskId": null,
@@ -21,16 +18,17 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"oPointTarget","path":"objects/oPointTarget/oPointTarget.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":8,"collisionObjectId":null,"parent":{"name":"o_part_emiter","path":"objects/o_part_emiter/o_part_emiter.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "DEMO",
-    "path": "folders/DEMO.yy",
+    "name": "Objects",
+    "path": "folders/Objects.yy",
   },
   "resourceVersion": "1.0",
-  "name": "oPointTarget",
+  "name": "o_part_emiter",
   "tags": [],
   "resourceType": "GMObject",
 }

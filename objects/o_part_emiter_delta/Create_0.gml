@@ -11,4 +11,13 @@ with(part_type1) {
 	part_image(s_pixel, 0, c_white, false, false, false);
 	part_speed(0.25 * 60, 0.25 * 60, 0, 0);
 	part_direction(0, 359, 0, 0);
+	part_step_function(
+		function() {
+			if collision_point(x, y, oPointTarget, true, false) {
+				color = c_red;
+				//size_increase = 10;
+				sprite = s_heart;
+			}
+		}
+	);
 }

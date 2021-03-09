@@ -88,6 +88,11 @@ function advanced_part_system() constructor {
 						
 						life -= part_system_delta;
 						
+						//Custom step function
+						if is_method(step_function) {
+							step_function();
+						}
+						
 						//Changing color
 						if colors_enabled {
 							var percent = 1 - (life / life_max);
@@ -300,6 +305,8 @@ function particle(part_type) constructor {
 		
 	death_part = part_type.part_death_type;
 	death_number = part_type.part_death_number;
+	
+	step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : -1;
 }
 
 function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
@@ -379,6 +386,8 @@ function advanced_part_type() constructor {
 	part_step_type = noone;
 	
 	spawn_timer = 0;
+	
+	part_step_func = -1;
 	
 	function part_image(sprite, subimg, color, animate, stretch, random) {
 		self.part_sprite = sprite;
@@ -465,6 +474,10 @@ function advanced_part_type() constructor {
 	function part_death(death_number, death_type) {
 		self.part_death_number = death_number;
 		self.part_death_type = death_type;
+	}
+	
+	function part_step_function(_function) {
+		self.part_step_func = _function;
 	}
 }
 

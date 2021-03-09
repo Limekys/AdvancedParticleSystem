@@ -13,6 +13,15 @@ with(part_type1) {
 	part_direction(0, 359, 0, 0);
 	part_blend(true);
 	part_alpha3(0, 1, 0);
+	part_step_function(
+		function() {
+			if sqrt(sqr(mouse_x - x) + sqr(mouse_y - y)) < 16 {
+				color = c_red;
+			} else {
+				color = c_aqua;
+			}
+		}
+	);
 }
 
 part_emitter2 = new advanced_part_emitter(ps, x-12, x+12, y, y, aps_shape.rectangle, aps_distr.linear);
