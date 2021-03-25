@@ -61,7 +61,7 @@ function advanced_part_system() constructor {
 		//Update particles
 		if !ds_list_empty(particle_list) {
 			var _size = ds_list_size(particle_list);
-			for (var i = 0; i < _size; i++) {
+			for (var i = _size; i >= 0; i--) {
 				var _particle = ds_list_find_value(particle_list, i);
 				if is_struct(_particle) {
 					//Update every particle
@@ -185,7 +185,6 @@ function advanced_part_system() constructor {
 								}
 							} else {
 								ds_list_delete(other.particle_list, i);
-								i--;
 							}
 						}
 					}
@@ -389,7 +388,7 @@ function advanced_part_type() constructor {
 	
 	part_step_func = -1;
 	
-	function part_image(sprite, subimg, color, animate, stretch, random) {
+	static part_image = function(sprite, subimg, color, animate, stretch, random) {
 		self.part_sprite = sprite;
 		self.part_subimg = subimg;
 		self.part_color = color;
@@ -398,37 +397,37 @@ function advanced_part_type() constructor {
 		self.part_subimg_random = random;
 	}
 	
-	function part_color3(color1, color2, color3) {
+	static part_color3 = function(color1, color2, color3) {
 		self.colors_enabled = true;
 		self.part_color_1 = color1;
 		self.part_color_2 = color2;
 		self.part_color_3 = color3;
 	}
 	
-	function part_alpha3(alpha1, alpha2, alpha3) {
+	static part_alpha3 = function(alpha1, alpha2, alpha3) {
 		self.alpha_blend_enabled = true;
 		self.part_alpha_1 = alpha1;
 		self.part_alpha_2 = alpha2;
 		self.part_alpha_3 = alpha3;
 	}
 	
-	function part_blend(additive) {
+	static part_blend = function(additive) {
 		self.part_additiveblend = additive;
 	}
 	
-	function part_size(size_min, size_max, size_incr, size_wiggle) {
+	static part_size = function(size_min, size_max, size_incr, size_wiggle) {
 		self.part_size_min = size_min;
 		self.part_size_max = size_max;
 		self.part_size_increase = size_incr;
 		self.part_size_wiggle = size_wiggle;
 	}
 	
-	function part_scale(xscale, yscale) {
+	static part_scale = function(xscale, yscale) {
 		self.part_xscale = xscale;
 		self.part_yscale = yscale;
 	}
 	
-	function part_orientation(ang_min, ang_max, ang_incr, ang_wiggle, ang_relative) {
+	static part_orientation = function(ang_min, ang_max, ang_incr, ang_wiggle, ang_relative) {
 		self.part_angle_min = ang_min;
 		self.part_angle_max = ang_max;
 		self.part_angle_increase = ang_incr;
@@ -436,47 +435,47 @@ function advanced_part_type() constructor {
 		self.part_angle_relative = ang_relative;
 	}
 	
-	function part_life(life_min, life_max) {
+	static part_life = function(life_min, life_max) {
 		self.part_time_min = life_min;
 		self.part_time_max = life_max;
 	}
 	
-	function part_gravity(gravity_amount, gravity_dir) {
+	static part_gravity = function(gravity_amount, gravity_dir) {
 		self.part_gravity_speed = gravity_amount;
 		self.part_gravity_direction = gravity_dir;
 	}
 	
-	function part_point_gravity(point_gravity_amount, point_gravity_x, point_gravity_y) {
+	static part_point_gravity = function(point_gravity_amount, point_gravity_x, point_gravity_y) {
 		self.part_point_gravity_speed = point_gravity_amount;
 		self.part_point_gravity_x = point_gravity_x;
 		self.part_point_gravity_y = point_gravity_y;
 	}
 	
-	function part_speed(speed_min, speed_max, speed_incr, speed_wiggle) {
+	static part_speed = function(speed_min, speed_max, speed_incr, speed_wiggle) {
 		self.part_speed_min = speed_min;
 		self.part_speed_max = speed_max;
 		self.part_speed_increase = speed_incr;
 		self.part_speed_wiggle = speed_wiggle;
 	}
 	
-	function part_direction(dir_min, dir_max, dir_incr, dir_wiggle) {
+	static part_direction = function(dir_min, dir_max, dir_incr, dir_wiggle) {
 		self.part_direction_min = dir_min;
 		self.part_direction_max = dir_max;
 		self.part_direction_increase = dir_incr;
 		self.part_direction_wiggle = dir_wiggle;
 	}
 	
-	function part_step(step_number, step_type) {
+	static part_step = function(step_number, step_type) {
 		self.part_step_number = step_number;
 		self.part_step_type = step_type;
 	}
 	
-	function part_death(death_number, death_type) {
+	static part_death = function(death_number, death_type) {
 		self.part_death_number = death_number;
 		self.part_death_type = death_type;
 	}
 	
-	function part_step_function(_function) {
+	static part_step_function = function(_function) {
 		self.part_step_func = _function;
 	}
 }
