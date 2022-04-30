@@ -17,7 +17,7 @@ with(water_drops) {
 	part_alpha3(0.5, 0.5, 0);
 	part_step_function(
 		function() {
-			if y > room_height-16 && life < life_max/1.1 {
+			if y >= room_height && life < life_max/1.1 {
 				life = 0;
 			}
 		}
@@ -35,8 +35,8 @@ with(water) {
 	part_death(5, other.water_drops);
 	part_step_function(
 		function() {
-			if y > room_height-20 {
-				y = room_height-16;
+			if y >= room_height {
+				y = room_height - 1;
 				life = 0;
 			}
 		}

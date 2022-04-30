@@ -1,3 +1,6 @@
+// ADVANCED PARTICLE SYSTEM by Limekys
+// VERSION: 2022.01.26
+
 enum aps_shape {
 	rectangle,
 	ellipse,
@@ -241,48 +244,48 @@ function advanced_part_system() constructor {
 
 //Basic particle
 function particle(part_type) constructor {
-	emitter = noone;
+	self.emitter = noone;
 	self.part_type = part_type;
 	
-	sprite = part_type.part_sprite;
-	subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
-	life = random_range(part_type.part_time_min,part_type.part_time_max);
-	life_max = life;
+	self.sprite = part_type.part_sprite;
+	self.subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
+	self.life = random_range(part_type.part_time_min,part_type.part_time_max);
+	self.life_max = life;
 	
-	x = 0;
-	y = 0;
-	direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
-	direction_increase = part_type.part_direction_increase;
-	direction_wiggle = part_type.part_direction_wiggle;
-	speed = max(0, random_range(part_type.part_speed_min,part_type.part_speed_max));
-	speed_increase = part_type.part_speed_increase;
-	speed_wiggle = part_type.part_speed_wiggle;
-	gravity = 0;
-	gravity_direction = part_type.part_gravity_direction;
-	gravity_speed = part_type.part_gravity_speed;
-	point_gravity = 0;
-	point_gravity_x = part_type.part_point_gravity_x;
-	point_gravity_y = part_type.part_point_gravity_y;
-	point_gravity_speed = part_type.part_point_gravity_speed;
+	self.x = 0;
+	self.y = 0;
+	self.direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
+	self.direction_increase = part_type.part_direction_increase;
+	self.direction_wiggle = part_type.part_direction_wiggle;
+	self.speed = max(0, random_range(part_type.part_speed_min,part_type.part_speed_max));
+	self.speed_increase = part_type.part_speed_increase;
+	self.speed_wiggle = part_type.part_speed_wiggle;
+	self.gravity = 0;
+	self.gravity_direction = part_type.part_gravity_direction;
+	self.gravity_speed = part_type.part_gravity_speed;
+	self.point_gravity = 0;
+	self.point_gravity_x = part_type.part_point_gravity_x;
+	self.point_gravity_y = part_type.part_point_gravity_y;
+	self.point_gravity_speed = part_type.part_point_gravity_speed;
 	
-	x_size = random_range(part_type.part_size_min,part_type.part_size_max);
-	y_size = x_size;
-	size_increase = part_type.part_size_increase;
-	size_wiggle = part_type.part_size_wiggle;
-	x_size *= part_type.part_xscale;
-	y_size *= part_type.part_yscale;
-	part_width = part_type.part_sprite_width * x_size;
-	part_height = part_type.part_sprite_height * y_size;
-	part_width_half = part_width / 2;
-	part_height_half = part_height / 2;
+	self.x_size = random_range(part_type.part_size_min,part_type.part_size_max);
+	self.y_size = x_size;
+	self.size_increase = part_type.part_size_increase;
+	self.size_wiggle = part_type.part_size_wiggle;
+	self.x_size *= part_type.part_xscale;
+	self.y_size *= part_type.part_yscale;
+	self.part_width = part_type.part_sprite_width * x_size;
+	self.part_height = part_type.part_sprite_height * y_size;
+	self.part_width_half = part_width / 2;
+	self.part_height_half = part_height / 2;
 	
-	angle = random_range(part_type.part_angle_min,part_type.part_angle_max);
-	angle_increase = part_type.part_angle_increase;
-	angle_wiggle = part_type.part_angle_wiggle;
-	angle_relative = part_type.part_angle_relative;
+	self.angle = random_range(part_type.part_angle_min,part_type.part_angle_max);
+	self.angle_increase = part_type.part_angle_increase;
+	self.angle_wiggle = part_type.part_angle_wiggle;
+	self.angle_relative = part_type.part_angle_relative;
 	
-	color = part_type.part_color;
-	alpha = 1;
+	self.color = part_type.part_color;
+	self.alpha = 1;
 		
 	self.colors_enabled = part_type.colors_enabled;
 	if colors_enabled {
@@ -293,100 +296,100 @@ function particle(part_type) constructor {
 	}
 		
 	self.alpha_blend_enabled = part_type.alpha_blend_enabled;
-	if alpha_blend_enabled {
+	if self.alpha_blend_enabled {
 		self.alpha1 = part_type.part_alpha_1;
 		self.alpha2 = part_type.part_alpha_2;
 		self.alpha3 = part_type.part_alpha_3;
-		alpha = alpha1;
+		self.alpha = alpha1;
 	}
 		
 	self.additiveblend = part_type.part_additiveblend;
 		
-	death_part = part_type.part_death_type;
-	death_number = part_type.part_death_number;
+	self.death_part = part_type.part_death_type;
+	self.death_number = part_type.part_death_number;
 	
-	step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : -1;
+	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : -1;
 }
 
 function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
-	part_sys = ps;
+	self.part_sys = ps;
 	
-	x_left = xmin;
-	x_right = xmax;
-	y_top = ymin;
-	y_down = ymax;
+	self.x_left = xmin;
+	self.x_right = xmax;
+	self.y_top = ymin;
+	self.y_down = ymax;
 	
-	emitter_shape = shape;
-	emitter_distr = distribution;
+	self.emitter_shape = shape;
+	self.emitter_distr = distribution;
 	
 	ds_list_add(ps.emitters_list, self);
 }
 
 function advanced_part_type() constructor {
-	part_sprite = noone;
-	part_subimg = 0;
-	part_color = c_white;
-	part_animate = false;
-	part_stretch = false;
-	part_subimg_random = false;
+	self.part_sprite = noone;
+	self.part_subimg = 0;
+	self.part_color = c_white;
+	self.part_animate = false;
+	self.part_stretch = false;
+	self.part_subimg_random = false;
 	
-	colors_enabled = false;
-	part_color_1 = c_white;
-	part_color_2 = c_white;
-	part_color_3 = c_white;
+	self.colors_enabled = false;
+	self.part_color_1 = c_white;
+	self.part_color_2 = c_white;
+	self.part_color_3 = c_white;
 	
-	alpha_blend_enabled = false;
-	part_alpha_1 = c_white;
-	part_alpha_2 = c_white;
-	part_alpha_3 = c_white;
+	self.alpha_blend_enabled = false;
+	self.part_alpha_1 = c_white;
+	self.part_alpha_2 = c_white;
+	self.part_alpha_3 = c_white;
 	
-	part_additiveblend = false;
+	self.part_additiveblend = false;
 	
-	part_time_min = room_speed;
-	part_time_max = room_speed*2;
+	self.part_time_min = 60;
+	self.part_time_max = 120;
 	
-	part_size_min = 1;
-	part_size_max = 1;
-	part_size_increase = 0;
-	part_size_wiggle = 0;
-	part_xscale = 1;
-	part_yscale = 1;
+	self.part_size_min = 1;
+	self.part_size_max = 1;
+	self.part_size_increase = 0;
+	self.part_size_wiggle = 0;
+	self.part_xscale = 1;
+	self.part_yscale = 1;
 	
-	part_angle_min = 0;
-	part_angle_max = 0;
-	part_angle_increase = 0;
-	part_angle_wiggle = 0;
-	part_angle_relative = false;
+	self.part_angle_min = 0;
+	self.part_angle_max = 0;
+	self.part_angle_increase = 0;
+	self.part_angle_wiggle = 0;
+	self.part_angle_relative = false;
 	
-	part_sprite_width = sprite_get_width(part_sprite);
-	part_sprite_height = sprite_get_height(part_sprite);
+	self.part_sprite_width = sprite_get_width(self.part_sprite);
+	self.part_sprite_height = sprite_get_height(self.part_sprite);
 	
-	part_speed_min = 0;
-	part_speed_max = 0;
-	part_speed_increase = 0;
-	part_speed_wiggle = 0;
+	self.part_speed_min = 0;
+	self.part_speed_max = 0;
+	self.part_speed_increase = 0;
+	self.part_speed_wiggle = 0;
 	
-	part_direction_min = 0;
-	part_direction_max = 0;
-	part_direction_increase = 0;
-	part_direction_wiggle = 0;
+	self.part_direction_min = 0;
+	self.part_direction_max = 0;
+	self.part_direction_increase = 0;
+	self.part_direction_wiggle = 0;
 	
-	part_gravity_direction = 0;
-	part_gravity_speed = 0;
+	self.part_gravity_direction = 0;
+	self.part_gravity_speed = 0;
 	
-	part_point_gravity_x = 0;
-	part_point_gravity_y = 0;
-	part_point_gravity_speed = 0;
+	self.part_point_gravity_x = 0;
+	self.part_point_gravity_y = 0;
+	self.part_point_gravity_speed = 0;
 	
-	part_death_number = 0;
-	part_death_type = noone;
+	self.part_death_number = 0;
+	self.part_death_type = noone;
 	
-	part_step_number = 0;
-	part_step_type = noone;
+	self.part_step_number = 0;
+	self.part_step_type = noone;
 	
-	spawn_timer = 0;
+	self.spawn_timer = 0;
 	
-	part_step_func = -1;
+	self.part_step_func = -1;
 	
 	static part_image = function(sprite, subimg, color, animate, stretch, random) {
 		self.part_sprite = sprite;
