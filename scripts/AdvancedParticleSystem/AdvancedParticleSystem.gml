@@ -207,7 +207,7 @@ function advanced_part_system() constructor {
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						
-						if sprite == noone or alpha == 0 break;
+						if sprite == noone || alpha == 0 break;
 						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						

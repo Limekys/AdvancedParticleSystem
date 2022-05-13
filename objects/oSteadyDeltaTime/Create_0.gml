@@ -32,6 +32,3 @@ dt = delta_time/1000000;
 dtPrevious = dt;
 // Whether or not internal delta time has been restored to previous value
 dtRestored = false;
-
-//Continuous timer (used for creating particles with deltatime)
-global.continuousDeltaTimer = 0;

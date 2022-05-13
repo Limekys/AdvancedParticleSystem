@@ -27,8 +27,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "DEMO",
-    "path": "folders/DEMO.yy",
+    "name": "Objects",
+    "path": "folders/DEMO/Objects.yy",
   },
   "resourceVersion": "1.0",
   "name": "o_part_rain_delta",
