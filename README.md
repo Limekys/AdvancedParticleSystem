@@ -66,7 +66,7 @@ Distance to mouse:
 
 Or just a rain:
 
-![Code](https://i.ibb.co/4gtLqpD/Game-Maker-Studio-GLPJnq-Nt-R5.png)
+![Code](https://i.ibb.co/wQrLGZG/Game-Maker-BYy7-A8dt-Dm.png)
 ![Rain drops](https://i.ibb.co/HdkCTDb/po21-GBE3l-W.gif)
 
 ***
