@@ -1,5 +1,7 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.01.26
+// VERSION: 2022.05.13
+
+#macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
 enum aps_shape {
 	rectangle,
@@ -38,14 +40,30 @@ function advanced_part_system() constructor {
 			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
 	}
 	
-	//Deltatime function
-	part_system_deltatime = false;
+	//DELTATIME SYSTEM INIT
+	part_system_deltatime_is_enabled = false;
+	
+	//Actual deltatime variable
+	global.particle_system_deltatime = 0;
+	// The lowest required frame rate before delta time will lag behind Step update.
+	// Setting this too low can increase chance of sporadic behaviour.
+	// Setting too high can cause games to lag behind during heavy cpu/gpu load.
+	minFPS = 10; // Default: 10 -- Not too hot, not too cold, but just right
+	
+	// The scale factor to multiply with delta time.
+	// Can be used to create global slow/fast motion affects.
+	// Negative values can be used, but are not advised under normal circumstances.
+	scale = 1.0; // Default: 1.0 -- Set higher to increase speed and lower to decrease speed
+	
+	// Internal calculated delta time
+	dt = delta_time/1000000;
+	// Previous value of internal delta time
+	dtPrevious = dt;
+	// Whether or not internal delta time has been restored to previous value
+	dtRestored = false;
 	
 	function enabledelta() {
-		if !instance_exists(oSteadyDeltaTime) {
-			instance_create_depth(0, 0, 9999, oSteadyDeltaTime);
-		}
-		part_system_deltatime = true;
+		part_system_deltatime_is_enabled = true;
 	}
 	
 	//Particles updating
@@ -58,10 +76,28 @@ function advanced_part_system() constructor {
 		part_system_view_x = camera_get_view_x(cam);
 		part_system_view_y = camera_get_view_y(cam);
 		
-		//Calculate deltatime
-		var part_system_delta = part_system_deltatime ? global.dt_steady : 1;
+		//DELTATIME SYSTEM UPDATE
+		// Store previous internal delta time
+		dtPrevious = dt;
+		// Update internal delta time
+		dt = delta_time/1000000;
+		// Prevent delta time from exhibiting sporadic behaviour
+		if (dt > 1/minFPS) {
+			if (dtRestored) { 
+				dt = 1/minFPS; 
+			} else { 
+				dt = dtPrevious;
+				dtRestored = true;
+			}
+		} else {
+			dtRestored = false;
+		}
+		// Assign internal delta time to global delta time affected by the time scale
+		global.particle_system_deltatime = dt*scale;
 		
 		//Update particles
+		var part_system_delta = part_system_deltatime_is_enabled ? _APS_DT : 1;
+		
 		if !ds_list_empty(particle_list) {
 			var _size = ds_list_size(particle_list);
 			for (var i = _size; i >= 0; i--) {
@@ -150,11 +186,11 @@ function advanced_part_system() constructor {
 						
 						//Step particles // NOT COMPLETED! //
 						if part_type.part_step_number != 0 {
-							//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime == true
-							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime == false
+							//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime_is_enabled == true
+							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
 							var spawn_interval = 1 / part_type.part_step_number;
-							if (other.part_system_deltatime == true) part_type.spawn_timer += global.dt_steady;
-							var repeat_count = other.part_system_deltatime ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
+							if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
+							var repeat_count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
 	
 							repeat(repeat_count) {
 								var part = new particle(part_type.part_step_type);
@@ -487,8 +523,8 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	// WITH DELTATIME		// Burst particles with deltatime (create numbers of particles within a second)
 	// WITHOUT DELTATIME	// And burst particles without deltatime (create numbers of particles each step)
 	var spawn_interval = 1 / number;
-	if (ps.part_system_deltatime == true) part_type.spawn_timer += global.dt_steady;
-	var repeat_count = ps.part_system_deltatime ? floor(part_type.spawn_timer / spawn_interval) : number;
+	if (ps.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
+	var repeat_count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
 	
 	repeat(repeat_count) {
 		var part = new particle(part_type);

@@ -15,7 +15,6 @@
     {"id":{"name":"o_part_emiter_firework_delta","path":"objects/o_part_emiter_firework_delta/o_part_emiter_firework_delta.yy",},"order":9,},
     {"id":{"name":"Room6","path":"rooms/Room6/Room6.yy",},"order":5,},
     {"id":{"name":"o_part_emiter_fire_delta","path":"objects/o_part_emiter_fire_delta/o_part_emiter_fire_delta.yy",},"order":7,},
-    {"id":{"name":"oSteadyDeltaTime","path":"objects/oSteadyDeltaTime/oSteadyDeltaTime.yy",},"order":2,},
     {"id":{"name":"o_old_part","path":"objects/o_old_part/o_old_part.yy",},"order":1,},
     {"id":{"name":"o_part_emiter_delta","path":"objects/o_part_emiter_delta/o_part_emiter_delta.yy",},"order":3,},
     {"id":{"name":"UsefulScripts","path":"scripts/UsefulScripts/UsefulScripts.yy",},"order":0,},
