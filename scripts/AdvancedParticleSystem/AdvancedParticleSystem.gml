@@ -98,7 +98,7 @@ function advanced_part_system() constructor {
 		//Update particles
 		var part_system_delta = part_system_deltatime_is_enabled ? _APS_DT : 1;
 		
-		if !array_length(particle_array) == 0 {
+		if array_length(particle_array) > 0 {
 			var _length = array_length(particle_array);
 			var i = _length - 1;
 			repeat (_length) {
@@ -236,7 +236,7 @@ function advanced_part_system() constructor {
 	
 	//Particles drawing
 	function draw() {
-		if !array_length(particle_array) == 0 {
+		if array_length(particle_array) > 0 {
 			var _length = array_length(particle_array);
 			var i = 0;
 			repeat (_length) {
@@ -264,7 +264,7 @@ function advanced_part_system() constructor {
 		}
 		
 		//Draw debug info
-		if particle_system_debug_mode && !array_length(emitters_array) == 0 {
+		if particle_system_debug_mode && array_length(emitters_array) > 0 {
 			var _def_col = draw_get_color();
 			draw_set_color(c_red);
 			var _length = array_length(emitters_array);
