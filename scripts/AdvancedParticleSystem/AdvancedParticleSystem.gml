@@ -20,8 +20,8 @@ enum aps_distr {
 
 function advanced_part_system() constructor {
 	
-	particle_list = [];
-	emitters_list = [];
+	particle_array = [];
+	emitters_array = [];
 	
 	particle_system_debug_mode = false;
 	
@@ -98,11 +98,11 @@ function advanced_part_system() constructor {
 		//Update particles
 		var part_system_delta = part_system_deltatime_is_enabled ? _APS_DT : 1;
 		
-		if !array_length(particle_list) == 0 {
-			var _length = array_length(particle_list);
+		if !array_length(particle_array) == 0 {
+			var _length = array_length(particle_array);
 			var i = _length - 1;
 			repeat (_length) {
-				var _particle = particle_list[i];
+				var _particle = particle_array[i];
 				if is_struct(_particle) {
 					//Update every particle
 					with(_particle) {
@@ -192,14 +192,14 @@ function advanced_part_system() constructor {
 							var spawn_interval = 1 / part_type.part_step_number;
 							if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
 							var count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
-							
+
 							repeat (count) {
 								var part = new particle(part_type.part_step_type);
 								with(part) {
 									x = other.x;
 									y = other.y;
 								}
-								array_push(other.particle_list, part);
+								array_push(other.particle_array, part);
 								part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
 							}
 						}
@@ -213,7 +213,7 @@ function advanced_part_system() constructor {
 									x = other.x;
 									y = other.y;
 								}
-								other.particle_list[i] = part;
+								other.particle_array[i] = part;
 								repeat (death_number - 1) {
 									var part = new particle(death_part);
 									with(part) {
@@ -221,10 +221,10 @@ function advanced_part_system() constructor {
 										x = other.x;
 										y = other.y;
 									}
-									array_push(other.particle_list, part);
+									array_push(other.particle_array, part);
 								}
 							} else {
-								array_delete(other.particle_list, i, 1);
+								array_delete(other.particle_array, i, 1);
 							}
 						}
 					}
@@ -236,11 +236,11 @@ function advanced_part_system() constructor {
 	
 	//Particles drawing
 	function draw() {
-		if !array_length(particle_list) == 0 {
-			var _length = array_length(particle_list);
+		if !array_length(particle_array) == 0 {
+			var _length = array_length(particle_array);
 			var i = 0;
 			repeat (_length) {
-				var particle = particle_list[i];
+				var particle = particle_array[i];
 				if is_struct(particle) {
 					//draw every particle if it is in view
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
@@ -264,13 +264,13 @@ function advanced_part_system() constructor {
 		}
 		
 		//Draw debug info
-		if particle_system_debug_mode && !array_length(emitters_list) == 0 {
+		if particle_system_debug_mode && !array_length(emitters_array) == 0 {
 			var _def_col = draw_get_color();
 			draw_set_color(c_red);
-			var _length = array_length(emitters_list);
+			var _length = array_length(emitters_array);
 			var i = 0;
 			repeat (_length) {
-				var emitter = emitters_list[i];
+				var emitter = emitters_array[i];
 				if is_struct(emitter) {
 					with(emitter) {
 						draw_rectangle(x_left, y_top, x_right, y_down, true);
@@ -364,7 +364,7 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) 
 	self.emitter_shape = shape;
 	self.emitter_distr = distribution;
 	
-	array_push(ps.emitters_list, self);
+	array_push(ps.emitters_array, self);
 }
 
 function advanced_part_type() constructor {
@@ -559,7 +559,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 				break; 
 			}
 		}
-		array_push(ps.particle_list, part);
+		array_push(ps.particle_array, part);
 	}
 	
 	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
@@ -572,7 +572,7 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 			self.x = x;
 			self.y = y;
 		}
-		array_push(ps.particle_list, part);
+		array_push(ps.particle_array, part);
 	}
 }
 
