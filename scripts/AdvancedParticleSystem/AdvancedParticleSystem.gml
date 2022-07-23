@@ -20,8 +20,8 @@ enum aps_distr {
 
 function advanced_part_system() constructor {
 	
-	particle_list = ds_list_create();
-	emitters_list = ds_list_create();
+	particle_array = [];
+	emitters_array = [];
 	
 	particle_system_debug_mode = false;
 	
@@ -98,10 +98,11 @@ function advanced_part_system() constructor {
 		//Update particles
 		var part_system_delta = part_system_deltatime_is_enabled ? _APS_DT : 1;
 		
-		if !ds_list_empty(particle_list) {
-			var _size = ds_list_size(particle_list);
-			for (var i = _size; i >= 0; i--) {
-				var _particle = ds_list_find_value(particle_list, i);
+		if array_length(particle_array) > 0 {
+			var _length = array_length(particle_array);
+			var i = _length - 1;
+			repeat (_length) {
+				var _particle = particle_array[i];
 				if is_struct(_particle) {
 					//Update every particle
 					with(_particle) {
@@ -190,15 +191,15 @@ function advanced_part_system() constructor {
 							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
 							var spawn_interval = 1 / part_type.part_step_number;
 							if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
-							var repeat_count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
-	
-							repeat(repeat_count) {
+							var count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
+
+							repeat (count) {
 								var part = new particle(part_type.part_step_type);
 								with(part) {
 									x = other.x;
 									y = other.y;
 								}
-								ds_list_add(other.particle_list, part);
+								array_push(other.particle_array, part);
 								part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
 							}
 						}
@@ -212,32 +213,34 @@ function advanced_part_system() constructor {
 									x = other.x;
 									y = other.y;
 								}
-								ds_list_replace(other.particle_list, i, part);
-								repeat(death_number-1) {
+								other.particle_array[i] = part;
+								repeat (death_number - 1) {
 									var part = new particle(death_part);
 									with(part) {
 										emitter = other.emitter;
 										x = other.x;
 										y = other.y;
 									}
-									ds_list_add(other.particle_list, part);
+									array_push(other.particle_array, part);
 								}
 							} else {
-								ds_list_delete(other.particle_list, i);
+								array_delete(other.particle_array, i, 1);
 							}
 						}
 					}
 				}
+				--i;
 			}
 		}
 	}
 	
 	//Particles drawing
 	function draw() {
-		if !ds_list_empty(particle_list) {
-			var _size = ds_list_size(particle_list);
-			for (var i = 0; i < _size; i++) {
-				var particle = ds_list_find_value(particle_list, i);
+		if array_length(particle_array) > 0 {
+			var _length = array_length(particle_array);
+			var i = 0;
+			repeat (_length) {
+				var particle = particle_array[i];
 				if is_struct(particle) {
 					//draw every particle if it is in view
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
@@ -256,22 +259,25 @@ function advanced_part_system() constructor {
 						if additiveblend gpu_set_blendmode(bm_normal); //TEMPORARY
 					}
 				}
+				++i;
 			}
 		}
 		
 		//Draw debug info
-		if particle_system_debug_mode && !ds_list_empty(emitters_list) {
+		if particle_system_debug_mode && array_length(emitters_array) > 0 {
 			var _def_col = draw_get_color();
 			draw_set_color(c_red);
-			var _size = ds_list_size(emitters_list);
-			for (var i = 0; i < _size; i++) {
-				var emitter = ds_list_find_value(emitters_list, i);
+			var _length = array_length(emitters_array);
+			var i = 0;
+			repeat (_length) {
+				var emitter = emitters_array[i];
 				if is_struct(emitter) {
 					with(emitter) {
 						draw_rectangle(x_left, y_top, x_right, y_down, true);
 						draw_line(x_left, y_top, x_right, y_down);
 					}
 				}
+				++i;
 			}
 			draw_set_color(_def_col);
 		}
@@ -358,7 +364,7 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) 
 	self.emitter_shape = shape;
 	self.emitter_distr = distribution;
 	
-	ds_list_add(ps.emitters_list, self);
+	array_push(ps.emitters_array, self);
 }
 
 function advanced_part_type() constructor {
@@ -524,9 +530,9 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	// WITHOUT DELTATIME	// And burst particles without deltatime (create numbers of particles each step)
 	var spawn_interval = 1 / number;
 	if (ps.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
-	var repeat_count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
+	var count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
 	
-	repeat(repeat_count) {
+	repeat (count) {
 		var part = new particle(part_type);
 		with(part) {
 			emitter = part_emit;
@@ -553,20 +559,20 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 				break; 
 			}
 		}
-		ds_list_add(ps.particle_list, part);
+		array_push(ps.particle_array, part);
 	}
 	
 	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
 }
 
 function advanced_part_particles_create(ps, x, y, part_type, number) {
-	repeat(number) {
+	repeat (number) {
 		var part = new particle(part_type);
 		with(part) {
 			self.x = x;
 			self.y = y;
 		}
-		ds_list_add(ps.particle_list, part);
+		array_push(ps.particle_array, part);
 	}
 }
 
@@ -583,9 +589,5 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 }
 
 function advanced_part_system_destroy(id) {
-	with(id) {
-		ds_list_destroy(particle_list);
-		ds_list_destroy(emitters_list);
-	}
 	delete id;
 }
