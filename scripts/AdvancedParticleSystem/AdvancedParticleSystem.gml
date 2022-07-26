@@ -411,8 +411,8 @@ function advanced_part_type() constructor {
 	self.part_angle_wiggle = 0;
 	self.part_angle_relative = false;
 	
-	self.part_sprite_width = sprite_get_width(self.part_sprite);
-	self.part_sprite_height = sprite_get_height(self.part_sprite);
+	self.part_sprite_width = 0;
+	self.part_sprite_height = 0;
 	
 	self.part_speed_min = 0;
 	self.part_speed_max = 0;
@@ -444,6 +444,8 @@ function advanced_part_type() constructor {
 	///@func part_image(sprite, subimg, color, animate, stretch, is_random)
 	static part_image = function(sprite, subimg, color, animate, stretch, is_random) {
 		self.part_sprite = sprite;
+		self.part_sprite_width = sprite_get_width(self.part_sprite);
+		self.part_sprite_height = sprite_get_height(self.part_sprite);
 		self.part_subimg = subimg;
 		self.part_color = color;
 		self.part_animate = animate;
