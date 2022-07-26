@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.07.23
+// VERSION: 2022.07.26
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -34,7 +34,9 @@ function advanced_part_system() constructor {
 	part_system_view_x = camera_get_view_x(cam);
 	part_system_view_y = camera_get_view_y(cam);
 	
-	function get_view(x, y, width, height) {
+	///@func get_view(x, y, width, height)
+	///@deprecated
+	static get_view = function(x, y, width, height) {
 		//return true if particle is in view
 		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
 			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
@@ -62,12 +64,16 @@ function advanced_part_system() constructor {
 	// Whether or not internal delta time has been restored to previous value
 	dtRestored = false;
 	
-	function enabledelta() {
+	///@func enabledelta()
+	///@desc Turns on the delta variable based on time
+	static enabledelta = function() {
 		part_system_deltatime_is_enabled = true;
 	}
 	
 	//Particles updating
-	function step() {
+	///@func step()
+	///@desc Updating all particles
+	static step = function() {
 		
 		//if (update_interval < aps_update_interval) { update_interval++; } else { update_interval = 1; } //not completed
 		
@@ -117,7 +123,7 @@ function advanced_part_system() constructor {
 							y_speed += -dsin(gravity_direction) * gravity * part_system_delta;
 						}
 						if point_gravity_speed != 0 {
-							point_gravity += point_gravity_speed * part_system_delta;;
+							point_gravity += point_gravity_speed * part_system_delta;
 							var point_gravity_dir = point_direction(x, y, point_gravity_x, point_gravity_y);
 							x_speed += dcos(point_gravity_dir) * point_gravity * part_system_delta;
 							y_speed += -dsin(point_gravity_dir) * point_gravity * part_system_delta;
@@ -206,7 +212,7 @@ function advanced_part_system() constructor {
 						
 						//Destroy particles
 						if life <= 0 {
-							if death_part != noone {
+							if death_part != undefined {
 								var part = new particle(death_part);
 								with(part) {
 									emitter = other.emitter;
@@ -235,7 +241,9 @@ function advanced_part_system() constructor {
 	}
 	
 	//Particles drawing
-	function draw() {
+	///@func draw()
+	///@desc Render all particles
+	static draw = function() {
 		if array_length(particle_array) > 0 {
 			var _length = array_length(particle_array);
 			var i = 0;
@@ -246,7 +254,7 @@ function advanced_part_system() constructor {
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(particle) {
 						
-						if sprite == noone || alpha == 0 break;
+						if sprite == undefined || alpha == 0 break;
 						
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						
@@ -286,7 +294,7 @@ function advanced_part_system() constructor {
 
 //Basic particle
 function particle(part_type) constructor {
-	self.emitter = noone;
+	self.emitter = undefined;
 	self.part_type = part_type;
 	
 	self.sprite = part_type.part_sprite;
@@ -350,7 +358,7 @@ function particle(part_type) constructor {
 	self.death_part = part_type.part_death_type;
 	self.death_number = part_type.part_death_number;
 	
-	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : -1;
+	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : undefined;
 }
 
 function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
@@ -368,7 +376,7 @@ function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) 
 }
 
 function advanced_part_type() constructor {
-	self.part_sprite = noone;
+	self.part_sprite = undefined;
 	self.part_subimg = 0;
 	self.part_color = c_white;
 	self.part_animate = false;
@@ -424,104 +432,134 @@ function advanced_part_type() constructor {
 	self.part_point_gravity_speed = 0;
 	
 	self.part_death_number = 0;
-	self.part_death_type = noone;
+	self.part_death_type = undefined;
 	
 	self.part_step_number = 0;
-	self.part_step_type = noone;
+	self.part_step_type = undefined;
 	
 	self.spawn_timer = 0;
 	
 	self.part_step_func = -1;
 	
-	static part_image = function(sprite, subimg, color, animate, stretch, random) {
+	///@func part_image(sprite, subimg, color, animate, stretch, is_random)
+	static part_image = function(sprite, subimg, color, animate, stretch, is_random) {
 		self.part_sprite = sprite;
 		self.part_subimg = subimg;
 		self.part_color = color;
 		self.part_animate = animate;
 		self.part_stretch = stretch;
-		self.part_subimg_random = random;
+		self.part_subimg_random = is_random;
+		return self;
 	}
 	
+	///@func part_color3(color1, color2, color3)
 	static part_color3 = function(color1, color2, color3) {
 		self.colors_enabled = true;
 		self.part_color_1 = color1;
 		self.part_color_2 = color2;
 		self.part_color_3 = color3;
+		return self;
 	}
 	
+	///@func part_alpha3(alpha1, alpha2, alpha3)
 	static part_alpha3 = function(alpha1, alpha2, alpha3) {
 		self.alpha_blend_enabled = true;
 		self.part_alpha_1 = alpha1;
 		self.part_alpha_2 = alpha2;
 		self.part_alpha_3 = alpha3;
+		return self;
 	}
 	
+	///@func part_blend(additive)
 	static part_blend = function(additive) {
 		self.part_additiveblend = additive;
+		return self;
 	}
 	
+	///@func part_size(size_min, size_max, size_incr, size_wiggle)
 	static part_size = function(size_min, size_max, size_incr, size_wiggle) {
 		self.part_size_min = size_min;
 		self.part_size_max = size_max;
 		self.part_size_increase = size_incr;
 		self.part_size_wiggle = size_wiggle;
+		return self;
 	}
 	
+	///@func part_scale(xscale, yscale)
 	static part_scale = function(xscale, yscale) {
 		self.part_xscale = xscale;
 		self.part_yscale = yscale;
+		return self;
 	}
 	
+	///@func part_orientation(ang_min, ang_max, ang_incr, ang_wiggle, ang_relative)
 	static part_orientation = function(ang_min, ang_max, ang_incr, ang_wiggle, ang_relative) {
 		self.part_angle_min = ang_min;
 		self.part_angle_max = ang_max;
 		self.part_angle_increase = ang_incr;
 		self.part_angle_wiggle = ang_wiggle;
 		self.part_angle_relative = ang_relative;
+		return self;
 	}
 	
+	///@func part_life(life_min, life_max)
 	static part_life = function(life_min, life_max) {
 		self.part_time_min = life_min;
 		self.part_time_max = life_max;
+		return self;
 	}
 	
+	///@func part_gravity(gravity_amount, gravity_dir)
 	static part_gravity = function(gravity_amount, gravity_dir) {
 		self.part_gravity_speed = gravity_amount;
 		self.part_gravity_direction = gravity_dir;
+		return self;
 	}
 	
+	///@func part_point_gravity(point_gravity_amount, point_gravity_x, point_gravity_y)
 	static part_point_gravity = function(point_gravity_amount, point_gravity_x, point_gravity_y) {
 		self.part_point_gravity_speed = point_gravity_amount;
 		self.part_point_gravity_x = point_gravity_x;
 		self.part_point_gravity_y = point_gravity_y;
+		return self;
 	}
 	
+	///@func part_speed(speed_min, speed_max, speed_incr, speed_wiggle)
 	static part_speed = function(speed_min, speed_max, speed_incr, speed_wiggle) {
 		self.part_speed_min = speed_min;
 		self.part_speed_max = speed_max;
 		self.part_speed_increase = speed_incr;
 		self.part_speed_wiggle = speed_wiggle;
+		return self;
 	}
 	
+	///@func part_direction(dir_min, dir_max, dir_incr, dir_wiggle)
 	static part_direction = function(dir_min, dir_max, dir_incr, dir_wiggle) {
 		self.part_direction_min = dir_min;
 		self.part_direction_max = dir_max;
 		self.part_direction_increase = dir_incr;
 		self.part_direction_wiggle = dir_wiggle;
+		return self;
 	}
 	
+	///@func part_step(step_number, step_type)
 	static part_step = function(step_number, step_type) {
 		self.part_step_number = step_number;
 		self.part_step_type = step_type;
+		return self;
 	}
 	
+	///@func part_death(death_number, death_type)
 	static part_death = function(death_number, death_type) {
 		self.part_death_number = death_number;
 		self.part_death_type = death_type;
+		return self;
 	}
 	
+	///@func part_step_function(_function)
 	static part_step_function = function(_function) {
 		self.part_step_func = _function;
+		return self;
 	}
 }
 
@@ -586,8 +624,4 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 		emitter_shape = shape;
 		emitter_distr = distribution;
 	}
-}
-
-function advanced_part_system_destroy(id) {
-	delete id;
 }

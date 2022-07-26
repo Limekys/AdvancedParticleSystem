@@ -13,7 +13,7 @@ with(part_type1) {
 	part_direction(0, 359, 0, 0);
 	part_step_function(
 		function() {
-			if collision_point(x, y, oPointTarget, true, false) {
+			if position_meeting(x, y, oPointTarget) {
 				color = c_red;
 				sprite = s_heart;
 			}
