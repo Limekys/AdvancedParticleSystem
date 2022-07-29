@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.07.28
+// VERSION: 2022.07.29
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -587,6 +587,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 					var A = (emitter.x_right - emitter.x_left) / 2;
 					var B = (emitter.y_down - emitter.y_top) / 2;
 					var X = random_range(-A, A);
+					if (A == 0) {A = 1;}
 					var Y = sqrt(B*B * (1 - X*X / (A*A)));
 					x = X + emitter.x_left + A;
 					y = random_range(-Y, Y) + emitter.y_top + B;
