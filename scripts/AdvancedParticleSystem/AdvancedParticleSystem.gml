@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.07.26
+// VERSION: 2022.07.28
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -259,9 +259,9 @@ function advanced_part_system() constructor {
 						if additiveblend gpu_set_blendmode(bm_add); //TEMPORARY
 						
 						if (x_size == 1 && y_size == 1 && angle == 0 && color == c_white && alpha == 1) {
-							draw_sprite(sprite, subimg, x-part_width_half, y-part_height_half);
+							draw_sprite(sprite, subimg, x, y);
 						} else {
-							draw_sprite_ext(sprite, subimg, x-part_width_half, y-part_height_half, x_size, y_size, angle, color, alpha);
+							draw_sprite_ext(sprite, subimg, x, y, x_size, y_size, angle, color, alpha);
 						}
 						
 						if additiveblend gpu_set_blendmode(bm_normal); //TEMPORARY
@@ -292,89 +292,7 @@ function advanced_part_system() constructor {
 	}
 }
 
-//Basic particle
-function particle(part_type) constructor {
-	self.emitter = undefined;
-	self.part_type = part_type;
-	
-	self.sprite = part_type.part_sprite;
-	self.subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
-	self.life = random_range(part_type.part_time_min,part_type.part_time_max);
-	self.life_max = life;
-	
-	self.x = 0;
-	self.y = 0;
-	self.direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
-	self.direction_increase = part_type.part_direction_increase;
-	self.direction_wiggle = part_type.part_direction_wiggle;
-	self.speed = max(0, random_range(part_type.part_speed_min,part_type.part_speed_max));
-	self.speed_increase = part_type.part_speed_increase;
-	self.speed_wiggle = part_type.part_speed_wiggle;
-	self.gravity = 0;
-	self.gravity_direction = part_type.part_gravity_direction;
-	self.gravity_speed = part_type.part_gravity_speed;
-	self.point_gravity = 0;
-	self.point_gravity_x = part_type.part_point_gravity_x;
-	self.point_gravity_y = part_type.part_point_gravity_y;
-	self.point_gravity_speed = part_type.part_point_gravity_speed;
-	
-	self.x_size = random_range(part_type.part_size_min,part_type.part_size_max);
-	self.y_size = x_size;
-	self.size_increase = part_type.part_size_increase;
-	self.size_wiggle = part_type.part_size_wiggle;
-	self.x_size *= part_type.part_xscale;
-	self.y_size *= part_type.part_yscale;
-	self.part_width = part_type.part_sprite_width * x_size;
-	self.part_height = part_type.part_sprite_height * y_size;
-	self.part_width_half = part_width / 2;
-	self.part_height_half = part_height / 2;
-	
-	self.angle = random_range(part_type.part_angle_min,part_type.part_angle_max);
-	self.angle_increase = part_type.part_angle_increase;
-	self.angle_wiggle = part_type.part_angle_wiggle;
-	self.angle_relative = part_type.part_angle_relative;
-	
-	self.color = part_type.part_color;
-	self.alpha = 1;
-		
-	self.colors_enabled = part_type.colors_enabled;
-	if colors_enabled {
-		self.color1 = part_type.part_color_1;
-		self.color2 = part_type.part_color_2;
-		self.color3 = part_type.part_color_3;
-		color = color1;
-	}
-		
-	self.alpha_blend_enabled = part_type.alpha_blend_enabled;
-	if self.alpha_blend_enabled {
-		self.alpha1 = part_type.part_alpha_1;
-		self.alpha2 = part_type.part_alpha_2;
-		self.alpha3 = part_type.part_alpha_3;
-		self.alpha = alpha1;
-	}
-		
-	self.additiveblend = part_type.part_additiveblend;
-		
-	self.death_part = part_type.part_death_type;
-	self.death_number = part_type.part_death_number;
-	
-	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : undefined;
-}
-
-function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
-	self.part_sys = ps;
-	
-	self.x_left = xmin;
-	self.x_right = xmax;
-	self.y_top = ymin;
-	self.y_down = ymax;
-	
-	self.emitter_shape = shape;
-	self.emitter_distr = distribution;
-	
-	array_push(ps.emitters_array, self);
-}
-
+//Particle type
 function advanced_part_type() constructor {
 	self.part_sprite = undefined;
 	self.part_subimg = 0;
@@ -411,9 +329,6 @@ function advanced_part_type() constructor {
 	self.part_angle_wiggle = 0;
 	self.part_angle_relative = false;
 	
-	self.part_sprite_width = 0;
-	self.part_sprite_height = 0;
-	
 	self.part_speed_min = 0;
 	self.part_speed_max = 0;
 	self.part_speed_increase = 0;
@@ -444,8 +359,6 @@ function advanced_part_type() constructor {
 	///@func part_image(sprite, subimg, color, animate, stretch, is_random)
 	static part_image = function(sprite, subimg, color, animate, stretch, is_random) {
 		self.part_sprite = sprite;
-		self.part_sprite_width = sprite_get_width(self.part_sprite);
-		self.part_sprite_height = sprite_get_height(self.part_sprite);
 		self.part_subimg = subimg;
 		self.part_color = color;
 		self.part_animate = animate;
@@ -565,6 +478,94 @@ function advanced_part_type() constructor {
 	}
 }
 
+//Particle
+function particle(part_type) constructor {
+	self.emitter = undefined;
+	self.part_type = part_type;
+	
+	self.sprite = part_type.part_sprite;
+	self.subimg = part_type.part_subimg; if (part_type.part_subimg_random) subimg = irandom(sprite_get_number(sprite) - 1);
+	self.life = random_range(part_type.part_time_min,part_type.part_time_max);
+	self.life_max = life;
+	
+	self.x = 0;
+	self.y = 0;
+	self.direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
+	self.direction_increase = part_type.part_direction_increase;
+	self.direction_wiggle = part_type.part_direction_wiggle;
+	self.speed = max(0, random_range(part_type.part_speed_min,part_type.part_speed_max));
+	self.speed_increase = part_type.part_speed_increase;
+	self.speed_wiggle = part_type.part_speed_wiggle;
+	self.gravity = 0;
+	self.gravity_direction = part_type.part_gravity_direction;
+	self.gravity_speed = part_type.part_gravity_speed;
+	self.point_gravity = 0;
+	self.point_gravity_x = part_type.part_point_gravity_x;
+	self.point_gravity_y = part_type.part_point_gravity_y;
+	self.point_gravity_speed = part_type.part_point_gravity_speed;
+	
+	self.x_size = random_range(part_type.part_size_min,part_type.part_size_max);
+	self.y_size = x_size;
+	self.size_increase = part_type.part_size_increase;
+	self.size_wiggle = part_type.part_size_wiggle;
+	self.x_size *= part_type.part_xscale;
+	self.y_size *= part_type.part_yscale;
+	
+	self.angle = random_range(part_type.part_angle_min,part_type.part_angle_max);
+	self.angle_increase = part_type.part_angle_increase;
+	self.angle_wiggle = part_type.part_angle_wiggle;
+	self.angle_relative = part_type.part_angle_relative;
+	
+	self.color = part_type.part_color;
+	self.alpha = 1;
+		
+	self.colors_enabled = part_type.colors_enabled;
+	if colors_enabled {
+		self.color1 = part_type.part_color_1;
+		self.color2 = part_type.part_color_2;
+		self.color3 = part_type.part_color_3;
+		color = color1;
+	}
+		
+	self.alpha_blend_enabled = part_type.alpha_blend_enabled;
+	if self.alpha_blend_enabled {
+		self.alpha1 = part_type.part_alpha_1;
+		self.alpha2 = part_type.part_alpha_2;
+		self.alpha3 = part_type.part_alpha_3;
+		self.alpha = alpha1;
+	}
+		
+	self.additiveblend = part_type.part_additiveblend;
+		
+	self.death_part = part_type.part_death_type;
+	self.death_number = part_type.part_death_number;
+	
+	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : undefined;
+}
+
+//Emitters
+function advanced_part_emitter(ps, xmin, xmax, ymin, ymax, shape, distribution) constructor {
+	self.part_sys = ps;
+	self.x_left = xmin;
+	self.x_right = xmax;
+	self.y_top = ymin;
+	self.y_down = ymax;
+	self.emitter_shape = shape;
+	self.emitter_distr = distribution;
+	array_push(ps.emitters_array, self);
+}
+
+function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, distribution) {
+	with(part_emit) {
+		self.x_left = xmin;
+		self.y_top = ymin;
+		self.x_right = xmax;
+		self.y_down = ymax;
+		self.emitter_shape = shape;
+		self.emitter_distr = distribution;
+	}
+}
+
 function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	// WITH DELTATIME		// Burst particles with deltatime (create numbers of particles within a second)
 	// WITHOUT DELTATIME	// And burst particles without deltatime (create numbers of particles each step)
@@ -605,6 +606,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
 }
 
+//Simple particle creating
 function advanced_part_particles_create(ps, x, y, part_type, number) {
 	repeat (number) {
 		var part = new particle(part_type);
@@ -613,17 +615,5 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 			self.y = y;
 		}
 		array_push(ps.particle_array, part);
-	}
-}
-
-function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, distribution) {
-	with(part_emit) {
-		x_left = xmin;
-		y_top = ymin;
-		x_right = xmax;
-		y_down = ymax;
-		
-		emitter_shape = shape;
-		emitter_distr = distribution;
 	}
 }
