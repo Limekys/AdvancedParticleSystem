@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.07.29
+// VERSION: 2022.09.11
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -26,21 +26,6 @@ function advanced_part_system() constructor {
 	particle_system_debug_mode = false;
 	
 	//update_interval = aps_update_interval; //not completed
-	
-	//Camera check function
-	var cam = view_camera[0];
-	part_system_view_width = camera_get_view_width(cam);
-	part_system_view_height = camera_get_view_height(cam);
-	part_system_view_x = camera_get_view_x(cam);
-	part_system_view_y = camera_get_view_y(cam);
-	
-	///@func get_view(x, y, width, height)
-	///@deprecated
-	static get_view = function(x, y, width, height) {
-		//return true if particle is in view
-		return (x + width / 2) > part_system_view_x && (x - width / 2) < part_system_view_x + part_system_view_width
-			&& (y + height / 2) > part_system_view_y && (y - height / 2) < part_system_view_y + part_system_view_height;
-	}
 	
 	//DELTATIME SYSTEM INIT
 	part_system_deltatime_is_enabled = false;
@@ -77,11 +62,6 @@ function advanced_part_system() constructor {
 		
 		//if (update_interval < aps_update_interval) { update_interval++; } else { update_interval = 1; } //not completed
 		
-		//Update camera position info
-		var cam = view_camera[0];
-		part_system_view_x = camera_get_view_x(cam);
-		part_system_view_y = camera_get_view_y(cam);
-		
 		//DELTATIME SYSTEM UPDATE
 		// Store previous internal delta time
 		dtPrevious = dt;
@@ -102,7 +82,7 @@ function advanced_part_system() constructor {
 		global.particle_system_deltatime = dt*scale;
 		
 		//Update particles
-		var part_system_delta = part_system_deltatime_is_enabled ? _APS_DT : 1;
+		var _delta_time = part_system_deltatime_is_enabled ? _APS_DT : 1;
 		
 		if array_length(particle_array) > 0 {
 			var _length = array_length(particle_array);
@@ -114,25 +94,25 @@ function advanced_part_system() constructor {
 					with(_particle) {
 						
 						//Moving
-						var x_speed = dcos(direction) * speed * part_system_delta;
-						var y_speed = -dsin(direction) * speed * part_system_delta;
+						var _x_speed = dcos(direction) * speed * _delta_time;
+						var _y_speed = -dsin(direction) * speed * _delta_time;
 						
 						if gravity_speed != 0 {
-							gravity += gravity_speed * part_system_delta;
-							x_speed += dcos(gravity_direction) * gravity * part_system_delta;
-							y_speed += -dsin(gravity_direction) * gravity * part_system_delta;
+							gravity += gravity_speed * _delta_time;
+							_x_speed += dcos(gravity_direction) * gravity * _delta_time;
+							_y_speed += -dsin(gravity_direction) * gravity * _delta_time;
 						}
 						if point_gravity_speed != 0 {
-							point_gravity += point_gravity_speed * part_system_delta;
+							point_gravity += point_gravity_speed * _delta_time;
 							var point_gravity_dir = point_direction(x, y, point_gravity_x, point_gravity_y);
-							x_speed += dcos(point_gravity_dir) * point_gravity * part_system_delta;
-							y_speed += -dsin(point_gravity_dir) * point_gravity * part_system_delta;
+							_x_speed += dcos(point_gravity_dir) * point_gravity * _delta_time;
+							_y_speed += -dsin(point_gravity_dir) * point_gravity * _delta_time;
 						}
 						
-						x += x_speed;
-						y += y_speed;
+						x += _x_speed;
+						y += _y_speed;
 						
-						life -= part_system_delta;
+						life -= _delta_time;
 						
 						//Custom step function
 						if is_method(step_function) {
@@ -141,41 +121,41 @@ function advanced_part_system() constructor {
 						
 						//Changing color
 						if colors_enabled {
-							var percent = 1 - (life / life_max);
+							var _percent = 1 - (life / life_max);
 							
-							if percent <= 0.5 {
-								color = merge_colour(color1, color2, percent * 2);
+							if _percent <= 0.5 {
+								color = merge_colour(color1, color2, _percent * 2);
 							} else {
-								color = merge_colour(color2, color3, percent * 2 - 1);
+								color = merge_colour(color2, color3, _percent * 2 - 1);
 							}
 						}
 						
 						//Changing alpha
 						if alpha_blend_enabled {
-							var percent = 1 - (life / life_max);
+							var _percent = 1 - (life / life_max);
 							
-							if percent <= 0.5 {
-								alpha = lerp(alpha1, alpha2, percent * 2);
+							if _percent <= 0.5 {
+								alpha = lerp(alpha1, alpha2, _percent * 2);
 							} else {
-								alpha = lerp(alpha2, alpha3, percent * 2 - 1);
+								alpha = lerp(alpha2, alpha3, _percent * 2 - 1);
 							}
 						}
 						
 						//Changing direction (direction_increase)
 						if direction_increase != 0 {
-							direction += direction_increase * part_system_delta;
+							direction += direction_increase * _delta_time;
 						}
 						
 						//Changing speed (speed_increase)
 						if speed_increase != 0 && speed > 0 {
-							speed += speed_increase * part_system_delta;
+							speed += speed_increase * _delta_time;
 						}
 						
 						//Changing angle (angle_increase, angle_relative)
 						if angle_relative {
 							angle = direction;
 						} else if angle_increase != 0 {
-							angle += angle_increase * part_system_delta;
+							angle += angle_increase * _delta_time;
 						}
 						if angle_wiggle != 0 { //not completed
 							//angle += sin(life * pi*2) * angle_wiggle * 0.5;
@@ -186,8 +166,8 @@ function advanced_part_system() constructor {
 						
 						//Changing size (size_increase)
 						if size_increase != 0 {
-							x_size += size_increase * part_system_delta;
-							y_size += size_increase * part_system_delta;
+							x_size += size_increase * _delta_time;
+							y_size += size_increase * _delta_time;
 							if (x_size <= 0 or y_size <= 0) { life = 0; }
 						}
 						
@@ -195,39 +175,39 @@ function advanced_part_system() constructor {
 						if part_type.part_step_number != 0 {
 							//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime_is_enabled == true
 							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
-							var spawn_interval = 1 / part_type.part_step_number;
+							var _spawn_interval = 1 / part_type.part_step_number;
 							if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
-							var count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : part_type.part_step_number;
+							var _count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / _spawn_interval) : part_type.part_step_number;
 
-							repeat (count) {
-								var part = new particle(part_type.part_step_type);
-								with(part) {
+							repeat (_count) {
+								var _step_particle = new particle(part_type.part_step_type);
+								with(_step_particle) {
 									x = other.x;
 									y = other.y;
 								}
-								array_push(other.particle_array, part);
-								part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
+								array_push(other.particle_array, _step_particle);
+								part_type.spawn_timer = part_type.spawn_timer mod _spawn_interval;
 							}
 						}
 						
 						//Destroy particles
 						if life <= 0 {
 							if death_part != undefined {
-								var part = new particle(death_part);
-								with(part) {
+								var _death_particle = new particle(death_part);
+								with(_death_particle) {
 									emitter = other.emitter;
 									x = other.x;
 									y = other.y;
 								}
-								other.particle_array[i] = part;
+								other.particle_array[i] = _death_particle;
 								repeat (death_number - 1) {
-									var part = new particle(death_part);
-									with(part) {
+									_death_particle = new particle(death_part);
+									with(_death_particle) {
 										emitter = other.emitter;
 										x = other.x;
 										y = other.y;
 									}
-									array_push(other.particle_array, part);
+									array_push(other.particle_array, _death_particle);
 								}
 							} else {
 								array_delete(other.particle_array, i, 1);
@@ -248,11 +228,11 @@ function advanced_part_system() constructor {
 			var _length = array_length(particle_array);
 			var i = 0;
 			repeat (_length) {
-				var particle = particle_array[i];
-				if is_struct(particle) {
+				var _particle = particle_array[i];
+				if is_struct(_particle) {
 					//draw every particle if it is in view
 					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
-					with(particle) {
+					with(_particle) {
 						
 						if sprite == undefined || alpha == 0 break;
 						
@@ -275,14 +255,16 @@ function advanced_part_system() constructor {
 		if particle_system_debug_mode && array_length(emitters_array) > 0 {
 			var _def_col = draw_get_color();
 			draw_set_color(c_red);
+			draw_set_alpha(0.5);
 			var _length = array_length(emitters_array);
 			var i = 0;
 			repeat (_length) {
-				var emitter = emitters_array[i];
-				if is_struct(emitter) {
-					with(emitter) {
+				var _emitter = emitters_array[i];
+				if is_struct(_emitter) {
+					with(_emitter) {
 						draw_rectangle(x_left, y_top, x_right, y_down, true);
-						draw_line(x_left, y_top, x_right, y_down);
+						draw_line(x_left - 1, y_top - 1, x_right, y_down);
+						draw_line(x_left - 1, y_down, x_right, y_top - 1);
 					}
 				}
 				++i;
@@ -574,8 +556,8 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	var count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
 	
 	repeat (count) {
-		var part = new particle(part_type);
-		with(part) {
+		var _particle = new particle(part_type);
+		with(_particle) {
 			emitter = part_emit;
 			switch(emitter.emitter_shape) {
 				default:
@@ -601,7 +583,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 				break; 
 			}
 		}
-		array_push(ps.particle_array, part);
+		array_push(ps.particle_array, _particle);
 	}
 	
 	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
@@ -610,11 +592,11 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 //Simple particle creating
 function advanced_part_particles_create(ps, x, y, part_type, number) {
 	repeat (number) {
-		var part = new particle(part_type);
-		with(part) {
+		var _particle = new particle(part_type);
+		with(_particle) {
 			self.x = x;
 			self.y = y;
 		}
-		array_push(ps.particle_array, part);
+		array_push(ps.particle_array, _particle);
 	}
 }

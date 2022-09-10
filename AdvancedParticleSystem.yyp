@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMProject",
+  "resourceVersion": "1.6",
+  "name": "AdvancedParticleSystem",
   "resources": [
     {"id":{"name":"oPointTarget","path":"objects/oPointTarget/oPointTarget.yy",},"order":12,},
     {"id":{"name":"sParticleSmoke","path":"sprites/sParticleSmoke/sParticleSmoke.yy",},"order":3,},
@@ -56,24 +59,20 @@
     {"roomId":{"name":"Room6","path":"rooms/Room6/Room6.yy",},},
   ],
   "Folders": [
-    {"folderPath":"folders/DEMO/Graphics.yy","order":1,"resourceVersion":"1.0","name":"Graphics","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Advanced Particle System.yy","order":1,"resourceVersion":"1.0","name":"Advanced Particle System","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/DEMO/Rooms.yy","order":3,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/DEMO.yy","order":3,"resourceVersion":"1.0","name":"DEMO","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/DEMO/Objects.yy","order":2,"resourceVersion":"1.0","name":"Objects","tags":[],"resourceType":"GMFolder",},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Graphics","folderPath":"folders/DEMO/Graphics.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Advanced Particle System","folderPath":"folders/Advanced Particle System.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Rooms","folderPath":"folders/DEMO/Rooms.yy","order":3,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"DEMO","folderPath":"folders/DEMO.yy","order":3,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Objects","folderPath":"folders/DEMO/Objects.yy","order":2,},
   ],
   "AudioGroups": [
-    {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
+    {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
   ],
   "TextureGroups": [
-    {"isScaled":true,"compressFormat":"bz2","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
+    {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","isScaled":true,"compressFormat":"bz2","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,},
   ],
   "IncludedFiles": [],
   "MetaData": {
-    "IDEVersion": "2022.6.0.23",
+    "IDEVersion": "2022.8.0.34",
   },
-  "resourceVersion": "1.5",
-  "name": "AdvancedParticleSystem",
-  "tags": [],
-  "resourceType": "GMProject",
 }
