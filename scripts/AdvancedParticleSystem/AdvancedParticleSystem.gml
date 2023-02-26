@@ -550,7 +550,7 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 
 function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 	// WITH DELTATIME		// Burst particles with deltatime (create numbers of particles within a second)
-	// WITHOUT DELTATIME	// And burst particles without deltatime (create numbers of particles each step)
+	// WITHOUT DELTATIME	// Burst particles without deltatime (create numbers of particles each step)
 	var spawn_interval = 1 / number;
 	if (ps.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
 	var count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
@@ -559,6 +559,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 		var _particle = new particle(part_type);
 		with(_particle) {
 			emitter = part_emit;
+			var A = 0, B = 0, X = 0, Y = 0;
 			switch(emitter.emitter_shape) {
 				default:
 				case aps_shape.rectangle: 
@@ -566,18 +567,18 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 					y = random_range(emitter.y_top, emitter.y_down);
 				break; 
 				case aps_shape.ellipse:
-					var A = (emitter.x_right - emitter.x_left) / 2;
-					var B = (emitter.y_down - emitter.y_top) / 2;
-					var X = random_range(-A, A);
+					A = (emitter.x_right - emitter.x_left) / 2;
+					B = (emitter.y_down - emitter.y_top) / 2;
+					X = random_range(-A, A);
 					if (A == 0) {A = 1;}
-					var Y = sqrt(B*B * (1 - X*X / (A*A)));
+					Y = sqrt(B*B * (1 - X*X / (A*A)));
 					x = X + emitter.x_left + A;
 					y = random_range(-Y, Y) + emitter.y_top + B;
 				break;
 				case aps_shape.line:
-					var A = (emitter.x_right - emitter.x_left) / 2;
-					var B = (emitter.y_down - emitter.y_top) / 2;
-					var X = random_range(-A, A);
+					A = (emitter.x_right - emitter.x_left) / 2;
+					B = (emitter.y_down - emitter.y_top) / 2;
+					X = random_range(-A, A);
 					x = X + emitter.x_left + A;
 					y = X / ((emitter.x_right - emitter.x_left) / (emitter.y_down - emitter.y_top)) + emitter.y_top + B;
 				break; 

@@ -20,7 +20,7 @@
   "IncludedFiles": [],
   "isEcma": false,
   "MetaData": {
-    "IDEVersion": "2023.1.0.58",
+    "IDEVersion": "2023.1.1.62",
   },
   "resources": [
     {"id":{"name":"oPointTarget","path":"objects/oPointTarget/oPointTarget.yy",},"order":12,},
