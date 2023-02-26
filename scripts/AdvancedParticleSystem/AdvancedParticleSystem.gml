@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2022.09.11
+// VERSION: 2023.02.26
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -54,6 +54,8 @@ function advanced_part_system() constructor {
 	static enabledelta = function() {
 		part_system_deltatime_is_enabled = true;
 	}
+	
+	
 	
 	//Particles updating
 	///@func step()
@@ -145,10 +147,18 @@ function advanced_part_system() constructor {
 						if direction_increase != 0 {
 							direction += direction_increase * _delta_time;
 						}
+						if direction_wiggle != 0 { //???//
+							var _wiggle = direction_wiggle;
+							direction = direction + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+						}
 						
 						//Changing speed (speed_increase)
 						if speed_increase != 0 && speed > 0 {
 							speed += speed_increase * _delta_time;
+						}
+						if speed_wiggle != 0 && speed > 0 { //???//
+							var _wiggle = speed_wiggle;
+							speed = speed + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 						}
 						
 						//Changing angle (angle_increase, angle_relative)
@@ -157,18 +167,21 @@ function advanced_part_system() constructor {
 						} else if angle_increase != 0 {
 							angle += angle_increase * _delta_time;
 						}
-						if angle_wiggle != 0 { //not completed
-							//angle += sin(life * pi*2) * angle_wiggle * 0.5;
-							
-							//EaseLinear(inputvalue,outputmin,outputmax,inputmax)
-							//var ang = argument2 * argument0 / argument3 + argument1;
+						if angle_wiggle != 0 { //???//
+							var _wiggle = angle_wiggle;
+							angle = angle + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 						}
 						
 						//Changing size (size_increase)
 						if size_increase != 0 {
 							x_size += size_increase * _delta_time;
 							y_size += size_increase * _delta_time;
-							if (x_size <= 0 or y_size <= 0) { life = 0; }
+							if (x_size <= 0 || y_size <= 0) { life = 0; }
+						}
+						if size_wiggle != 0 { //???//
+							var _wiggle = size_wiggle;
+							x_size = x_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+							y_size = y_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 						}
 						
 						//Step particles // NOT COMPLETED! //
@@ -230,8 +243,6 @@ function advanced_part_system() constructor {
 			repeat (_length) {
 				var _particle = particle_array[i];
 				if is_struct(_particle) {
-					//draw every particle if it is in view
-					//if get_view(particle.x, particle.y, particle.part_width, particle.part_height)
 					with(_particle) {
 						
 						if sprite == undefined || alpha == 0 break;
@@ -254,6 +265,7 @@ function advanced_part_system() constructor {
 		//Draw debug info
 		if particle_system_debug_mode && array_length(emitters_array) > 0 {
 			var _def_col = draw_get_color();
+			var _def_alp = draw_get_alpha();
 			draw_set_color(c_red);
 			draw_set_alpha(0.5);
 			var _length = array_length(emitters_array);
@@ -270,6 +282,7 @@ function advanced_part_system() constructor {
 				++i;
 			}
 			draw_set_color(_def_col);
+			draw_set_alpha(_def_alp);
 		}
 	}
 }
@@ -523,6 +536,13 @@ function particle(part_type) constructor {
 	self.death_number = part_type.part_death_number;
 	
 	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : undefined;
+	
+	///@func wiggle(_from, _dest, _duration, _offset)
+	///@desc wiggle particle (this function used only on Particle!
+	static wiggle = function(_from, _dest, _duration, _offset) {
+		var a4 = (_dest - _from) * 0.5;
+		return _from + a4 + sin((((current_time * 0.001) + _duration * _offset) / _duration) * (pi*2)) * a4;
+	}
 }
 
 //Emitters
