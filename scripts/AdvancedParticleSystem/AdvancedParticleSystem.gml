@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2023.02.26
+// VERSION: 2023.03.18
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -22,8 +22,8 @@ function advanced_part_system() constructor {
 	
 	particle_array = [];
 	emitters_array = [];
-	
-	particle_system_debug_mode = false;
+	part_system_max_count = 1000;
+	part_system_debug_mode = false;
 	
 	//update_interval = aps_update_interval; //not completed
 	
@@ -49,13 +49,19 @@ function advanced_part_system() constructor {
 	// Whether or not internal delta time has been restored to previous value
 	dtRestored = false;
 	
-	///@func enabledelta()
+	///@func enabledelta(enable = true)
 	///@desc Turns on the delta variable based on time
-	static enabledelta = function() {
-		part_system_deltatime_is_enabled = true;
+	static enabledelta = function(enable = true) {
+		part_system_deltatime_is_enabled = enable;
+		return self;
 	}
 	
-	
+	///@func set_max_count(max_count = 1000)
+	///@desc Set max count of all particles
+	static set_max_count = function(max_count = 1000) {
+		part_system_max_count = max_count;
+		return self;
+	}
 	
 	//Particles updating
 	///@func step()
@@ -65,29 +71,44 @@ function advanced_part_system() constructor {
 		//if (update_interval < aps_update_interval) { update_interval++; } else { update_interval = 1; } //not completed
 		
 		//DELTATIME SYSTEM UPDATE
-		// Store previous internal delta time
-		dtPrevious = dt;
-		// Update internal delta time
-		dt = delta_time/1000000;
-		// Prevent delta time from exhibiting sporadic behaviour
-		if (dt > 1/minFPS) {
-			if (dtRestored) { 
-				dt = 1/minFPS; 
-			} else { 
-				dt = dtPrevious;
-				dtRestored = true;
+		if part_system_deltatime_is_enabled {
+			// Store previous internal delta time
+			dtPrevious = dt;
+			// Update internal delta time
+			dt = delta_time/1000000;
+			// Prevent delta time from exhibiting sporadic behaviour
+			if (dt > 1/minFPS) {
+				if (dtRestored) { 
+					dt = 1/minFPS; 
+				} else { 
+					dt = dtPrevious;
+					dtRestored = true;
+				}
+			} else {
+				dtRestored = false;
 			}
-		} else {
-			dtRestored = false;
+			// Assign internal delta time to global delta time affected by the time scale
+			global.particle_system_deltatime = dt*scale;
 		}
-		// Assign internal delta time to global delta time affected by the time scale
-		global.particle_system_deltatime = dt*scale;
 		
 		//Update particles
-		var _delta_time = part_system_deltatime_is_enabled ? _APS_DT : 1;
+		var _length = array_length(particle_array);
 		
-		if array_length(particle_array) > 0 {
-			var _length = array_length(particle_array);
+		if _length > 0 {
+			
+			//Remove unnecessary particles if the number of particles exceeds a given maximum value in "part_system_max_count"
+			if _length > part_system_max_count {
+				var _unnecessary_particles_number = _length - part_system_max_count;
+				repeat(_unnecessary_particles_number) {
+					//Select a random particle
+					var _part = irandom(_length--);
+					//And delete it
+					array_delete(particle_array, _part, 1);
+				}
+			}
+			
+			//Update all particles
+			var _delta_time = part_system_deltatime_is_enabled ? _APS_DT : 1;
 			var i = _length - 1;
 			repeat (_length) {
 				var _particle = particle_array[i];
@@ -263,7 +284,7 @@ function advanced_part_system() constructor {
 		}
 		
 		//Draw debug info
-		if particle_system_debug_mode && array_length(emitters_array) > 0 {
+		if part_system_debug_mode && array_length(emitters_array) > 0 {
 			var _def_col = draw_get_color();
 			var _def_alp = draw_get_alpha();
 			draw_set_color(c_red);
