@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "UsefulScripts",
+  "name": "LimekysUsefulFunctions",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "DEMO",
-    "path": "folders/DEMO.yy",
+    "name": "UsefulTools",
+    "path": "folders/Limekys/UsefulTools.yy",
   },
 }

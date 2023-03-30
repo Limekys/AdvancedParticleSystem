@@ -6,6 +6,6 @@
   "isDnD": false,
   "parent": {
     "name": "Advanced Particle System",
-    "path": "folders/Advanced Particle System.yy",
+    "path": "folders/Limekys/Advanced Particle System.yy",
   },
 }

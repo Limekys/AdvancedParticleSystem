@@ -1,10 +1,10 @@
 {
   "FolderOrderSettings": [
-    {"name":"Advanced Particle System","order":1,"path":"folders/Advanced Particle System.yy",},
-    {"name":"DEMO","order":3,"path":"folders/DEMO.yy",},
+    {"name":"DEMO","order":1,"path":"folders/DEMO.yy",},
     {"name":"Graphics","order":1,"path":"folders/DEMO/Graphics.yy",},
     {"name":"Objects","order":2,"path":"folders/DEMO/Objects.yy",},
     {"name":"Rooms","order":3,"path":"folders/DEMO/Rooms.yy",},
+    {"name":"UsefulTools","order":2,"path":"folders/Limekys/UsefulTools.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"oPointTarget","order":12,"path":"objects/oPointTarget/oPointTarget.yy",},

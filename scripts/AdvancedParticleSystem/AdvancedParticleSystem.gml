@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2023.03.18
+// VERSION: 2023.03.30
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -61,6 +61,12 @@ function advanced_part_system() constructor {
 	static set_max_count = function(max_count = 1000) {
 		part_system_max_count = max_count;
 		return self;
+	}
+	
+	///@func clear()
+	///@desc Delete all exists particles
+	static clear = function() {
+		particle_array = [];
 	}
 	
 	//Particles updating
