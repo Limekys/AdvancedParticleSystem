@@ -11,12 +11,12 @@
   },
   "defaultScriptType": 1,
   "Folders": [
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Advanced Particle System","folderPath":"folders/Limekys/Advanced Particle System.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"DEMO","folderPath":"folders/DEMO.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Graphics","folderPath":"folders/DEMO/Graphics.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Objects","folderPath":"folders/DEMO/Objects.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Rooms","folderPath":"folders/DEMO/Rooms.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Limekys","folderPath":"folders/Limekys.yy",},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Advanced Particle System","folderPath":"folders/Limekys/Advanced Particle System.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"UsefulTools","folderPath":"folders/Limekys/UsefulTools.yy",},
   ],
   "IncludedFiles": [],
