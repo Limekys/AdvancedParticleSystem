@@ -1,5 +1,5 @@
 // ADVANCED PARTICLE SYSTEM by Limekys
-// VERSION: 2023.04.06
+// VERSION: 2023.04.23
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -595,13 +595,26 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 	}
 }
 
-function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
-	// WITH DELTATIME		// Burst particles with deltatime (create numbers of particles within a second)
-	// WITHOUT DELTATIME	// Burst particles without deltatime (create numbers of particles each step)
+///@desc Creates the specified number of particles from the emitter within a second/step,
+///	and returns an array with the currently created particles;
+/// If DeltaTime enabled: Create numbers of particles within a second;
+/// If DeltaTime disabled: Create numbers of particles each step.
+function advanced_part_emitter_burst(ps, part_emit, part_type, number, spawn_timer = "emitter_burst") {
+	//Create a unique variable for the particle creation timer
+	//(in case this function will be called several times in the same object)
+	if !variable_instance_exists(self, spawn_timer) {
+		variable_instance_set(self, spawn_timer, 0);
+	}
+	//Calculate spawn interval
 	var spawn_interval = 1 / number;
-	if (ps.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
-	var count = ps.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / spawn_interval) : number;
-	
+	//Counting the timer if DeltaTime is enabled
+	if (ps.part_system_deltatime_is_enabled == true) {
+		self[$ spawn_timer] = self[$ spawn_timer] + _APS_DT;
+	}
+	//Calculate the number of particles
+	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer] / spawn_interval) : number;
+	//Create particles
+	var _particles = [];
 	repeat (count) {
 		var _particle = new particle(part_type);
 		with(_particle) {
@@ -632,12 +645,15 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number) {
 			}
 		}
 		array_push(ps.particle_array, _particle);
+		array_push(_particles, _particle);
 	}
-	
-	part_type.spawn_timer = part_type.spawn_timer mod spawn_interval;
+	//Reset timer
+	self[$ spawn_timer] = self[$ spawn_timer] mod spawn_interval;
+	//Return array with created particles in this step
+	return _particles;
 }
 
-//Simple particle creating
+///@desc Creates particles and return array with created particles
 function advanced_part_particles_create(ps, x, y, part_type, number) {
 	var _particles = [];
 	repeat (number) {
@@ -649,5 +665,40 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 		array_push(ps.particle_array, _particle);
 		array_push(_particles, _particle);
 	}
+	return _particles;
+}
+
+///@desc Creates the specified number of particles at X,Y position within a second/step,
+///	and returns an array with the currently created particles;
+/// If DeltaTime enabled: Create numbers of particles within a second;
+/// If DeltaTime disabled: Create numbers of particles each step.
+function advanced_part_particles_burst(ps, x, y, part_type, number, spawn_timer = "particles_burst") {
+	//Create a unique variable for the particle creation timer
+	//(in case this function will be called several times in the same object)
+	if !variable_instance_exists(self, spawn_timer) {
+		variable_instance_set(self, spawn_timer, 0);
+	}
+	//Calculate spawn interval
+	var spawn_interval = 1 / number;
+	//Counting the timer if DeltaTime is enabled
+	if (ps.part_system_deltatime_is_enabled == true) {
+		self[$ spawn_timer] = self[$ spawn_timer] + _APS_DT;
+	}
+	//Calculate the number of particles
+	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer] / spawn_interval) : number;
+	//Create particles
+	var _particles = [];
+	repeat (count) {
+		var _particle = new particle(part_type);
+		with(_particle) {
+			self.x = x;
+			self.y = y;
+		}
+		array_push(ps.particle_array, _particle);
+		array_push(_particles, _particle);
+	}
+	//Reset timer
+	self[$ spawn_timer] = self[$ spawn_timer] mod spawn_interval;
+	//Return array with created particles in this step
 	return _particles;
 }
