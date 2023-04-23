@@ -1,5 +1,5 @@
 //Useful functions by Limekys (This script has MIT Licence)
-#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2023.03.11"
+#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2023.04.10"
 
 #macro DT global.dt_steady
 
@@ -38,17 +38,17 @@ function Chance(value) {
 	return value > random(1);
 }
 
-///@func Wave(value1, value2, duration, offset)
-///@desc Returns a value that will wave back and forth between [from-to] over [duration] seconds based on current time
+///@desc Wave(from, to, duration, offset)
+/// Returns a value that will wave back and forth between [from-to] over [duration] seconds based on current time
 /// Examples:
 /// image_angle = Wave(-45,45,1,0)  -> rock back and forth 90 degrees in a second
 /// x = Wave(-10,10,0.25,0)         -> move left and right quickly
 /// Or here is a fun one! Make an object be all squishy!! ^u^
 /// image_xscale = Wave(0.5, 2.0, 1.0, 0.0)
 /// image_yscale = Wave(2.0, 0.5, 1.0, 0.0)
-function Wave(value1, value2, duration, offset) {
-	var _a = (value2 - value1) * 0.5;
-	return value1 + _a + sin((((current_time * 0.001) + duration * offset) / duration) * (pi*2)) * _a;
+function Wave(value, destination, duration, offset) {
+	var _a = (destination - value) * 0.5;
+	return value + _a + sin((((current_time * 0.001) + duration * offset) / duration) * (pi*2)) * _a;
 }
 
 function DrawSetText(_color = undefined, _font = undefined, _haling = undefined, _valing = undefined, _alpha = undefined) {
@@ -347,8 +347,8 @@ function Range(value, old_min, old_max, new_min, new_max) {
 function IntervalUpdateFunction(name, seconds, _function, start_from = -1) {
 	var n1 = name + "_interval";
 	var n2 = name + "_interval_lenght";
-	if !variable_instance_exists(self, n1) self[$ n1] = 0;
-	if !variable_instance_exists(self, n2) self[$ n2] = start_from == -1 ? seconds : start_from;
+	if !variable_instance_exists(self, n1) self[$ n1] = start_from == -1 ? 0 : start_from;
+	if !variable_instance_exists(self, n2) self[$ n2] = seconds;
 	
 	self[$ n1] += DT;
 	if self[$ n1] >= self[$ n2] {
