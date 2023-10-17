@@ -1,5 +1,5 @@
 //Advanced particle system by Limekys (This script has MIT Licence)
-#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2023.04.23"
+#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2023.10.17"
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -137,6 +137,9 @@ function advanced_part_system() constructor {
 							_x_speed += dcos(point_gravity_dir) * point_gravity * _delta_time;
 							_y_speed += -dsin(point_gravity_dir) * point_gravity * _delta_time;
 						}
+						
+						x_previous = x;
+						y_previous = y;
 						
 						x += _x_speed;
 						y += _y_speed;
@@ -512,6 +515,8 @@ function particle(part_type) constructor {
 	
 	self.x = 0;
 	self.y = 0;
+	self.x_previous = self.x;
+	self.y_previous = self.y;
 	self.direction = random_range(part_type.part_direction_min,part_type.part_direction_max);
 	self.direction_increase = part_type.part_direction_increase;
 	self.direction_wiggle = part_type.part_direction_wiggle;
