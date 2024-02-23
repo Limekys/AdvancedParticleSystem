@@ -1,5 +1,5 @@
 //Advanced particle system by Limekys (This script has MIT Licence)
-#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2023.10.17"
+#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2024.02.23"
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -206,7 +206,6 @@ function advanced_part_system() constructor {
 						if size_increase != 0 {
 							x_size += size_increase * _delta_time;
 							y_size += size_increase * _delta_time;
-							if (x_size <= 0 || y_size <= 0) { life = 0; }
 						}
 						if size_wiggle != 0 { //???//
 							var _wiggle = size_wiggle;
