@@ -1,5 +1,5 @@
 //Advanced particle system by Limekys (This script has MIT Licence)
-#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2024.02.23"
+#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2024.02.26"
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -25,7 +25,12 @@ function advanced_part_system() constructor {
 	part_system_max_count = 1000;
 	part_system_debug_mode = false;
 	
-	//update_interval = aps_update_interval; //not completed
+	//Update timer (a little bit more optimization stuff)
+	//You can specify a target FPS for the particles
+	//for example at a value of 30 the particles will update 30 times per second
+	//when the rest of the game will update at your specified frame rate of 60, 120 ....
+	part_system_update_timer = 0;
+	part_system_update_fps = 60;
 	
 	//DELTATIME SYSTEM INIT
 	part_system_deltatime_is_enabled = false;
@@ -60,6 +65,13 @@ function advanced_part_system() constructor {
 	///@desc Set max count of all particles
 	static set_max_count = function(max_count = 1000) {
 		part_system_max_count = max_count;
+		return self;
+	}
+	
+	///@func set_update_fps(update_fps = 60)
+	///@desc Set target update fps for particle system
+	static set_update_fps = function(update_fps = 60) {
+		part_system_update_fps = update_fps;
 		return self;
 	}
 	
@@ -116,148 +128,154 @@ function advanced_part_system() constructor {
 			//Update all particles
 			var _delta_time = part_system_deltatime_is_enabled ? _APS_DT : 1;
 			var i = _length - 1;
-			repeat (_length) {
-				var _particle = particle_array[i];
-				if is_struct(_particle) {
-					//Update every particle
-					with(_particle) {
+			var _multiplier = max(1, fps / part_system_update_fps);
+			_delta_time *= _multiplier;
+			part_system_update_timer++;
+			if part_system_update_timer >= _multiplier {
+				part_system_update_timer -= _multiplier;
+				repeat (_length) {
+					var _particle = particle_array[i];
+					if is_struct(_particle) {
+						//Update every particle
+						with(_particle) {
 						
-						//Moving
-						var _x_speed = dcos(direction) * speed * _delta_time;
-						var _y_speed = -dsin(direction) * speed * _delta_time;
+							//Moving
+							var _x_speed = dcos(direction) * speed * _delta_time;
+							var _y_speed = -dsin(direction) * speed * _delta_time;
 						
-						if gravity_speed != 0 {
-							gravity += gravity_speed * _delta_time;
-							_x_speed += dcos(gravity_direction) * gravity * _delta_time;
-							_y_speed += -dsin(gravity_direction) * gravity * _delta_time;
-						}
-						if point_gravity_speed != 0 {
-							point_gravity += point_gravity_speed * _delta_time;
-							var point_gravity_dir = point_direction(x, y, point_gravity_x, point_gravity_y);
-							_x_speed += dcos(point_gravity_dir) * point_gravity * _delta_time;
-							_y_speed += -dsin(point_gravity_dir) * point_gravity * _delta_time;
-						}
-						
-						x_previous = x;
-						y_previous = y;
-						
-						x += _x_speed;
-						y += _y_speed;
-						
-						life -= _delta_time;
-						
-						//Custom step function
-						if is_method(step_function) {
-							step_function();
-						}
-						
-						//Changing color
-						if colors_enabled {
-							var _percent = 1 - (life / life_max);
-							
-							if _percent <= 0.5 {
-								color = merge_colour(color1, color2, _percent * 2);
-							} else {
-								color = merge_colour(color2, color3, _percent * 2 - 1);
+							if gravity_speed != 0 {
+								gravity += gravity_speed * _delta_time;
+								_x_speed += dcos(gravity_direction) * gravity * _delta_time;
+								_y_speed += -dsin(gravity_direction) * gravity * _delta_time;
 							}
-						}
-						
-						//Changing alpha
-						if alpha_blend_enabled {
-							var _percent = 1 - (life / life_max);
-							
-							if _percent <= 0.5 {
-								alpha = lerp(alpha1, alpha2, _percent * 2);
-							} else {
-								alpha = lerp(alpha2, alpha3, _percent * 2 - 1);
+							if point_gravity_speed != 0 {
+								point_gravity += point_gravity_speed * _delta_time;
+								var point_gravity_dir = point_direction(x, y, point_gravity_x, point_gravity_y);
+								_x_speed += dcos(point_gravity_dir) * point_gravity * _delta_time;
+								_y_speed += -dsin(point_gravity_dir) * point_gravity * _delta_time;
 							}
-						}
 						
-						//Changing direction (direction_increase)
-						if direction_increase != 0 {
-							direction += direction_increase * _delta_time;
-						}
-						if direction_wiggle != 0 { //???//
-							var _wiggle = direction_wiggle;
-							direction = direction + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
-						}
+							x_previous = x;
+							y_previous = y;
 						
-						//Changing speed (speed_increase)
-						if speed_increase != 0 && speed > 0 {
-							speed += speed_increase * _delta_time;
-						}
-						if speed_wiggle != 0 && speed > 0 { //???//
-							var _wiggle = speed_wiggle;
-							speed = speed + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
-						}
+							x += _x_speed;
+							y += _y_speed;
 						
-						//Changing angle (angle_increase, angle_relative)
-						if angle_relative {
-							angle = direction;
-						} else if angle_increase != 0 {
-							angle += angle_increase * _delta_time;
-						}
-						if angle_wiggle != 0 { //???//
-							var _wiggle = angle_wiggle;
-							angle = angle + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
-						}
+							life -= _delta_time;
 						
-						//Changing size (size_increase)
-						if size_increase != 0 {
-							x_size += size_increase * _delta_time;
-							y_size += size_increase * _delta_time;
-						}
-						if size_wiggle != 0 { //???//
-							var _wiggle = size_wiggle;
-							x_size = x_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
-							y_size = y_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
-						}
+							//Custom step function
+							if is_method(step_function) {
+								step_function();
+							}
 						
-						//Step particles // NOT COMPLETED! //
-						if part_type.part_step_number != 0 {
-							//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime_is_enabled == true
-							//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
-							var _spawn_interval = 1 / part_type.part_step_number;
-							if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
-							var _count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / _spawn_interval) : part_type.part_step_number;
+							//Changing color
+							if colors_enabled {
+								var _percent = 1 - (life / life_max);
+							
+								if _percent <= 0.5 {
+									color = merge_colour(color1, color2, _percent * 2);
+								} else {
+									color = merge_colour(color2, color3, _percent * 2 - 1);
+								}
+							}
+						
+							//Changing alpha
+							if alpha_blend_enabled {
+								var _percent = 1 - (life / life_max);
+							
+								if _percent <= 0.5 {
+									alpha = lerp(alpha1, alpha2, _percent * 2);
+								} else {
+									alpha = lerp(alpha2, alpha3, _percent * 2 - 1);
+								}
+							}
+						
+							//Changing direction (direction_increase)
+							if direction_increase != 0 {
+								direction += direction_increase * _delta_time;
+							}
+							if direction_wiggle != 0 { //???//
+								var _wiggle = direction_wiggle;
+								direction = direction + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+							}
+						
+							//Changing speed (speed_increase)
+							if speed_increase != 0 && speed > 0 {
+								speed += speed_increase * _delta_time;
+							}
+							if speed_wiggle != 0 && speed > 0 { //???//
+								var _wiggle = speed_wiggle;
+								speed = speed + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+							}
+						
+							//Changing angle (angle_increase, angle_relative)
+							if angle_relative {
+								angle = direction;
+							} else if angle_increase != 0 {
+								angle += angle_increase * _delta_time;
+							}
+							if angle_wiggle != 0 { //???//
+								var _wiggle = angle_wiggle;
+								angle = angle + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+							}
+						
+							//Changing size (size_increase)
+							if size_increase != 0 {
+								x_size += size_increase * _delta_time;
+								y_size += size_increase * _delta_time;
+							}
+							if size_wiggle != 0 { //???//
+								var _wiggle = size_wiggle;
+								x_size = x_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+								y_size = y_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
+							}
+						
+							//Step particles // NOT COMPLETED! //
+							if part_type.part_step_number != 0 {
+								//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime_is_enabled == true
+								//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
+								var _spawn_interval = 1 / part_type.part_step_number;
+								if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
+								var _count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / _spawn_interval) : part_type.part_step_number;
 
-							repeat (_count) {
-								var _step_particle = new particle(part_type.part_step_type);
-								with(_step_particle) {
-									x = other.x;
-									y = other.y;
+								repeat (_count) {
+									var _step_particle = new particle(part_type.part_step_type);
+									with(_step_particle) {
+										x = other.x;
+										y = other.y;
+									}
+									array_push(other.particle_array, _step_particle);
+									part_type.spawn_timer = part_type.spawn_timer mod _spawn_interval;
 								}
-								array_push(other.particle_array, _step_particle);
-								part_type.spawn_timer = part_type.spawn_timer mod _spawn_interval;
 							}
-						}
 						
-						//Destroy particles
-						if life <= 0 {
-							if death_part != undefined {
-								var _death_particle = new particle(death_part);
-								with(_death_particle) {
-									emitter = other.emitter;
-									x = other.x;
-									y = other.y;
-								}
-								other.particle_array[i] = _death_particle;
-								repeat (death_number - 1) {
-									_death_particle = new particle(death_part);
+							//Destroy particles
+							if life <= 0 {
+								if death_part != undefined {
+									var _death_particle = new particle(death_part);
 									with(_death_particle) {
 										emitter = other.emitter;
 										x = other.x;
 										y = other.y;
 									}
-									array_push(other.particle_array, _death_particle);
+									other.particle_array[i] = _death_particle;
+									repeat (death_number - 1) {
+										_death_particle = new particle(death_part);
+										with(_death_particle) {
+											emitter = other.emitter;
+											x = other.x;
+											y = other.y;
+										}
+										array_push(other.particle_array, _death_particle);
+									}
+								} else {
+									array_delete(other.particle_array, i, 1);
 								}
-							} else {
-								array_delete(other.particle_array, i, 1);
 							}
 						}
 					}
+					--i;
 				}
-				--i;
 			}
 		}
 	}
