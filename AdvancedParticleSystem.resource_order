@@ -1,12 +1,12 @@
 {
-  "FolderOrderSettings": [
+  "FolderOrderSettings":[
     {"name":"DEMO","order":1,"path":"folders/DEMO.yy",},
     {"name":"Graphics","order":1,"path":"folders/DEMO/Graphics.yy",},
     {"name":"Objects","order":2,"path":"folders/DEMO/Objects.yy",},
     {"name":"Rooms","order":3,"path":"folders/DEMO/Rooms.yy",},
     {"name":"UsefulTools","order":2,"path":"folders/Limekys/UsefulTools.yy",},
   ],
-  "ResourceOrderSettings": [
+  "ResourceOrderSettings":[
     {"name":"oPointTarget","order":12,"path":"objects/oPointTarget/oPointTarget.yy",},
     {"name":"sParticleSmoke","order":3,"path":"sprites/sParticleSmoke/sParticleSmoke.yy",},
     {"name":"Room4","order":3,"path":"rooms/Room4/Room4.yy",},

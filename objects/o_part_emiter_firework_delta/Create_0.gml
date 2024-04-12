@@ -1,6 +1,7 @@
 ps = new advanced_part_system();
 ps.particle_system_debug_mode = global.particles_debug_mode;
 ps.enabledelta();
+
 em = new advanced_part_emitter(ps, x-4, x+4, y-2, y+2, aps_shape.ellipse, aps_distr.linear);
 
 boom_part = new advanced_part_type();
