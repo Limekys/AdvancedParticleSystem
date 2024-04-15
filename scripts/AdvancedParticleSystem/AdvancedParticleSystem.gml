@@ -1,5 +1,5 @@
 //Advanced particle system by Limekys (This script has MIT Licence)
-#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2024.02.26"
+#macro LIMEKYS_ADVANCED_PARTICLE_SYSTEM_VERSION "2024.04.15"
 
 #macro _APS_DT global.particle_system_deltatime //This is a delta time variable, you can replace it with your own if you use your delta time system in the game
 
@@ -138,11 +138,11 @@ function advanced_part_system() constructor {
 					if is_struct(_particle) {
 						//Update every particle
 						with(_particle) {
-						
+							
 							//Moving
 							var _x_speed = dcos(direction) * speed * _delta_time;
 							var _y_speed = -dsin(direction) * speed * _delta_time;
-						
+							
 							if gravity_speed != 0 {
 								gravity += gravity_speed * _delta_time;
 								_x_speed += dcos(gravity_direction) * gravity * _delta_time;
@@ -154,20 +154,30 @@ function advanced_part_system() constructor {
 								_x_speed += dcos(point_gravity_dir) * point_gravity * _delta_time;
 								_y_speed += -dsin(point_gravity_dir) * point_gravity * _delta_time;
 							}
-						
+							
 							x_previous = x;
 							y_previous = y;
-						
+							
 							x += _x_speed;
 							y += _y_speed;
-						
+							
 							life -= _delta_time;
-						
+							
 							//Custom step function
 							if is_method(step_function) {
 								step_function();
 							}
-						
+							
+							//Animation
+							if part_type.part_animate == true {
+								if part_type.part_stretch == true {
+									var _numb = sprite_get_number(sprite);
+									subimg = _numb - ((life / life_max) * _numb);
+								} else {
+									subimg++;
+								}
+							}
+							
 							//Changing color
 							if colors_enabled {
 								var _percent = 1 - (life / life_max);
@@ -178,7 +188,7 @@ function advanced_part_system() constructor {
 									color = merge_colour(color2, color3, _percent * 2 - 1);
 								}
 							}
-						
+							
 							//Changing alpha
 							if alpha_blend_enabled {
 								var _percent = 1 - (life / life_max);
@@ -189,7 +199,7 @@ function advanced_part_system() constructor {
 									alpha = lerp(alpha2, alpha3, _percent * 2 - 1);
 								}
 							}
-						
+							
 							//Changing direction (direction_increase)
 							if direction_increase != 0 {
 								direction += direction_increase * _delta_time;
@@ -198,7 +208,7 @@ function advanced_part_system() constructor {
 								var _wiggle = direction_wiggle;
 								direction = direction + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 							}
-						
+							
 							//Changing speed (speed_increase)
 							if speed_increase != 0 && speed > 0 {
 								speed += speed_increase * _delta_time;
@@ -207,7 +217,7 @@ function advanced_part_system() constructor {
 								var _wiggle = speed_wiggle;
 								speed = speed + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 							}
-						
+							
 							//Changing angle (angle_increase, angle_relative)
 							if angle_relative {
 								angle = direction;
@@ -218,7 +228,7 @@ function advanced_part_system() constructor {
 								var _wiggle = angle_wiggle;
 								angle = angle + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 							}
-						
+							
 							//Changing size (size_increase)
 							if size_increase != 0 {
 								x_size += size_increase * _delta_time;
@@ -229,15 +239,15 @@ function advanced_part_system() constructor {
 								x_size = x_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 								y_size = y_size + wiggle(-_wiggle, _wiggle, 0.2 * _delta_time, life);
 							}
-						
+							
 							//Step particles // NOT COMPLETED! //
 							if part_type.part_step_number != 0 {
-								//Burst particles with deltatime (create numbers of particles within a second) if ps.part_system_deltatime_is_enabled == true
-								//And burst particles without deltatime (create numbers of particles each step) if ps.part_system_deltatime_is_enabled == false
+								//Burst particles with deltatime (create numbers of particles within a second) if deltatime is enabled
+								//And burst particles without deltatime (create numbers of particles each step) if deltatime is disabled
 								var _spawn_interval = 1 / part_type.part_step_number;
 								if (other.part_system_deltatime_is_enabled == true) part_type.spawn_timer += _APS_DT;
 								var _count = other.part_system_deltatime_is_enabled ? floor(part_type.spawn_timer / _spawn_interval) : part_type.part_step_number;
-
+								
 								repeat (_count) {
 									var _step_particle = new particle(part_type.part_step_type);
 									with(_step_particle) {
@@ -248,7 +258,7 @@ function advanced_part_system() constructor {
 									part_type.spawn_timer = part_type.spawn_timer mod _spawn_interval;
 								}
 							}
-						
+							
 							//Destroy particles
 							if life <= 0 {
 								if death_part != undefined {
@@ -587,7 +597,7 @@ function particle(part_type) constructor {
 	self.step_function = is_method(part_type.part_step_func) ? method(self, part_type.part_step_func) : undefined;
 	
 	///@func wiggle(_from, _dest, _duration, _offset)
-	///@desc wiggle particle (this function used only on Particle!
+	///@desc wiggle particle (this function used only on Particle!)
 	static wiggle = function(_from, _dest, _duration, _offset) {
 		var a4 = (_dest - _from) * 0.5;
 		return _from + a4 + sin((((current_time * 0.001) + _duration * _offset) / _duration) * (pi*2)) * a4;
@@ -621,20 +631,20 @@ function advanced_part_emitter_region(part_emit, xmin, xmax, ymin, ymax, shape, 
 ///	and returns an array with the currently created particles;
 /// If DeltaTime enabled: Create numbers of particles within a second;
 /// If DeltaTime disabled: Create numbers of particles each step.
-function advanced_part_emitter_burst(ps, part_emit, part_type, number, spawn_timer = "emitter_burst") {
+function advanced_part_emitter_burst(ps, part_emit, part_type, number, spawn_timer_name = "emitter_burst") {
 	//Create a unique variable for the particle creation timer
 	//(in case this function will be called several times in the same object)
-	if !variable_instance_exists(self, spawn_timer) {
-		variable_instance_set(self, spawn_timer, 0);
+	if !variable_instance_exists(self, spawn_timer_name) {
+		variable_instance_set(self, spawn_timer_name, 0);
 	}
 	//Calculate spawn interval
 	var spawn_interval = 1 / number;
 	//Counting the timer if DeltaTime is enabled
 	if (ps.part_system_deltatime_is_enabled == true) {
-		self[$ spawn_timer] = self[$ spawn_timer] + _APS_DT;
+		self[$ spawn_timer_name] = self[$ spawn_timer_name] + _APS_DT;
 	}
 	//Calculate the number of particles
-	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer] / spawn_interval) : number;
+	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer_name] / spawn_interval) : number;
 	//Create particles
 	var _particles = [];
 	repeat (count) {
@@ -670,7 +680,7 @@ function advanced_part_emitter_burst(ps, part_emit, part_type, number, spawn_tim
 		array_push(_particles, _particle);
 	}
 	//Reset timer
-	self[$ spawn_timer] = self[$ spawn_timer] mod spawn_interval;
+	self[$ spawn_timer_name] = self[$ spawn_timer_name] mod spawn_interval;
 	//Return array with created particles in this step
 	return _particles;
 }
@@ -690,24 +700,24 @@ function advanced_part_particles_create(ps, x, y, part_type, number) {
 	return _particles;
 }
 
-///@desc Creates the specified number of particles at X,Y position within a second/step,
+///@desc Creates the specified number of particles at X,Y position within a one second/step,
 ///	and returns an array with the currently created particles;
 /// If DeltaTime enabled: Create numbers of particles within a second;
 /// If DeltaTime disabled: Create numbers of particles each step.
-function advanced_part_particles_burst(ps, x, y, part_type, number, spawn_timer = "particles_burst") {
+function advanced_part_particles_burst(ps, x, y, part_type, number, spawn_timer_name = "particles_burst") {
 	//Create a unique variable for the particle creation timer
 	//(in case this function will be called several times in the same object)
-	if !variable_instance_exists(self, spawn_timer) {
-		variable_instance_set(self, spawn_timer, 0);
+	if !variable_instance_exists(self, spawn_timer_name) {
+		variable_instance_set(self, spawn_timer_name, 0);
 	}
 	//Calculate spawn interval
 	var spawn_interval = 1 / number;
 	//Counting the timer if DeltaTime is enabled
 	if (ps.part_system_deltatime_is_enabled == true) {
-		self[$ spawn_timer] = self[$ spawn_timer] + _APS_DT;
+		self[$ spawn_timer_name] = self[$ spawn_timer_name] + _APS_DT;
 	}
 	//Calculate the number of particles
-	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer] / spawn_interval) : number;
+	var count = ps.part_system_deltatime_is_enabled ? floor(self[$ spawn_timer_name] / spawn_interval) : number;
 	//Create particles
 	var _particles = [];
 	repeat (count) {
@@ -720,7 +730,7 @@ function advanced_part_particles_burst(ps, x, y, part_type, number, spawn_timer 
 		array_push(_particles, _particle);
 	}
 	//Reset timer
-	self[$ spawn_timer] = self[$ spawn_timer] mod spawn_interval;
+	self[$ spawn_timer_name] = self[$ spawn_timer_name] mod spawn_interval;
 	//Return array with created particles in this step
 	return _particles;
 }
