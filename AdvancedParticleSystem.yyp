@@ -22,13 +22,14 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.2.0.132",
+    "IDEVersion":"2024.6.2.162",
   },
   "name":"AdvancedParticleSystem",
   "resources":[
     {"id":{"name":"fSmall","path":"fonts/fSmall/fSmall.yy",},},
     {"id":{"name":"o_gm_part_animate_stretch","path":"objects/o_gm_part_animate_stretch/o_gm_part_animate_stretch.yy",},},
     {"id":{"name":"o_gm_part_animate","path":"objects/o_gm_part_animate/o_gm_part_animate.yy",},},
+    {"id":{"name":"o_gm_part_emitter_wiggle","path":"objects/o_gm_part_emitter_wiggle/o_gm_part_emitter_wiggle.yy",},},
     {"id":{"name":"o_gm_part_emitter","path":"objects/o_gm_part_emitter/o_gm_part_emitter.yy",},},
     {"id":{"name":"o_part_emitter_animate_delta","path":"objects/o_part_emitter_animate_delta/o_part_emitter_animate_delta.yy",},},
     {"id":{"name":"o_part_emitter_animate_stretch_delta","path":"objects/o_part_emitter_animate_stretch_delta/o_part_emitter_animate_stretch_delta.yy",},},
@@ -39,7 +40,6 @@
     {"id":{"name":"o_part_emitter_firework2_delta","path":"objects/o_part_emitter_firework2_delta/o_part_emitter_firework2_delta.yy",},},
     {"id":{"name":"o_part_emitter_rain_delta","path":"objects/o_part_emitter_rain_delta/o_part_emitter_rain_delta.yy",},},
     {"id":{"name":"o_part_emitter_wiggle","path":"objects/o_part_emitter_wiggle/o_part_emitter_wiggle.yy",},},
-    {"id":{"name":"o_gm_part_emitter_wiggle","path":"objects/o_gm_part_emitter_wiggle/o_gm_part_emitter_wiggle.yy",},},
     {"id":{"name":"o_part_emitter","path":"objects/o_part_emitter/o_part_emitter.yy",},},
     {"id":{"name":"o_part_emitter2_delta","path":"objects/o_part_emitter2_delta/o_part_emitter2_delta.yy",},},
     {"id":{"name":"o_part_emitter2","path":"objects/o_part_emitter2/o_part_emitter2.yy",},},

@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"LimekysUsefulFunctions",
   "isCompatibility":false,
   "isDnD":false,
