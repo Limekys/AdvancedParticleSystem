@@ -1,5 +1,8 @@
 //Useful functions by Limekys (This script has MIT Licence)
-#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2023.10.31"
+#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2024.07.31"
+
+#macro DEBUG_INIT_TIMER var __debug_timer = get_timer();
+#macro DEBUG_PRINT_TIMER print(string_format(((get_timer() - __debug_timer) / 1000000), 1, 8));
 
 function Approach(_value, _dest, _amount) {
 	return (_value + clamp(_dest-_value, -_amount, _amount));
