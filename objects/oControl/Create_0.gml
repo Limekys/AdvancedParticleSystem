@@ -13,3 +13,6 @@ alarm[0] = 60;
 win_h = window_get_height();
 
 global.particles_debug_mode = false;
+
+#macro DEBUG_INIT_TIMER var _tm = get_timer();
+#macro DEBUG_PRINT_TIMER print(string_format(((get_timer() - _tm) / 1000000), 1, 8));
