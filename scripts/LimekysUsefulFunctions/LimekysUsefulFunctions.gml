@@ -1,5 +1,5 @@
 //Useful functions by Limekys (This script has MIT Licence)
-#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2023.08.05"
+#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2023.10.31"
 
 function Approach(_value, _dest, _amount) {
 	return (_value + clamp(_dest-_value, -_amount, _amount));
@@ -74,8 +74,8 @@ function DrawTextOutline(_x, _y, _string, _outwidth, _outcolor, _outfidelity) {
 	draw_text(_x,_y,_string);
 }
 
-/// @description DrawTextOutlineTransformed(x,y,str,outwidth,outcol,outfidelity)
-///Created by Andrew McCluskey http://nalgames.com/
+///@func DrawTextOutlineTransformed(_x, _y, _string, _xscale, _yscale, _outwidth, _outcolor, _outfidelity)
+///@desc Created by Andrew McCluskey http://nalgames.com/
 ///Edited version by Limekys
 ///x,y: Coordinates to draw
 ///str: String to draw
@@ -90,6 +90,17 @@ function DrawTextOutlineTransformed(_x, _y, _string, _xscale, _yscale, _outwidth
 	}
 	draw_set_color(_dto_dcol);
 	draw_text_transformed(_x,_y,_string,_xscale,_yscale,0);
+}
+
+///@func DrawTextOutlineTransformedExt(_x, _y, _string, _xscale, _yscale, _angle, _outwidth, _outcolor, _outfidelity)
+function DrawTextOutlineTransformedExt(_x, _y, _string, _xscale, _yscale, _angle, _outwidth, _outcolor, _outfidelity) {
+	var _dto_dcol = draw_get_color();
+	draw_set_color(_outcolor);
+	for(var dto_i = 45; dto_i < 405; dto_i += 360/_outfidelity) {
+	    draw_text_transformed(_x + lengthdir_x(_outwidth, dto_i), _y + lengthdir_y(_outwidth, dto_i), _string, _xscale, _yscale, _angle);
+	}
+	draw_set_color(_dto_dcol);
+	draw_text_transformed(_x,_y,_string,_xscale,_yscale,_angle);
 }
 
 function DrawTextShadow(_x, _y, _string) {
