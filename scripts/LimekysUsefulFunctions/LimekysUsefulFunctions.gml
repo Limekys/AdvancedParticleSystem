@@ -1,257 +1,359 @@
+// Feather ignore all
+
 //Useful functions by Limekys (This script has MIT Licence)
-#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2024.07.31"
+#macro LIMEKYS_USEFUL_FUNCTIONS_VERSION "2025.01.08"
 
-#macro DEBUG_INIT_TIMER var __debug_timer = get_timer();
-#macro DEBUG_PRINT_TIMER print(string_format(((get_timer() - __debug_timer) / 1000000), 1, 8));
+// Debug timers (used to test prerfomance)
+// add DEBUG_INIT_TIMER before code you want to test
+// add DEBUG_PRINT_TIMER after code you want to test
+#macro DEBUG_INIT_TIMER var __debug_timer = get_timer()
+#macro DEBUG_PRINT_TIMER print(string_format(((get_timer() - __debug_timer) / 1000000), 1, 8))
 
-function Approach(_value, _dest, _amount) {
-	return (_value + clamp(_dest-_value, -_amount, _amount));
+/**
+* Function Description
+* @param {real} value Description
+* @param {real} destination Description
+* @param {real} amount Description
+* @returns {real} Description
+*/
+function Approach(value, destination, amount) {
+	return (value + clamp(destination-value, -amount, amount));
 }
 
-function ApproachDelta(_value, _dest, _amount) {
-	return (_value + clamp(_dest-_value, -_amount*DT, _amount*DT));
+/**
+* Function Description
+* @param {real} value Description
+* @param {real} destination Description
+* @param {real} amount Description
+* @returns {real} Description
+*/
+function ApproachDelta(value, destination, amount) {
+	return (value + clamp(destination-value, -amount*DT, amount*DT));
 }
 
-///@arg {Real} value
-///@arg {Real} destination
-///@arg {Real} smoothness
-///@arg {Real} threshold
-///@returns {Real}
+/**
+* Function Description
+* @param {real} value Description
+* @param {real} destination Description
+* @param {real} smoothness Description
+* @param {real} [threshold]=0.01 Description
+* @returns {real} Description
+*/
 function SmoothApproach(value, destination, smoothness, threshold = 0.01) {
 	var _difference = destination - value;
-    if (abs(_difference) < threshold) return destination;
+	if (abs(_difference) < threshold) return destination;
 	return lerp(value, destination, 1/smoothness);
 }
 
-///@arg {Real} value
-///@arg {Real} destination
-///@arg {Real} smoothness
-///@arg {Real} threshold
-///@returns {Real}
+/**
+* Function Description
+* @param {real} value Description
+* @param {real} destination Description
+* @param {real} smoothness Description
+* @param {real} [threshold]=0.01 Description
+* @returns {real} Description
+*/
 function SmoothApproachDelta(value, destination, smoothness, threshold = 0.01) {
 	var _difference = destination - value;
-    if (abs(_difference) < threshold) return destination;
+	if (abs(_difference) < threshold) return destination;
 	return lerp(value, destination, 1/smoothness*DT*60); // 1/_smoothness*DT*60 // 1 - power(1 / _smoothness, DT)
 }
 
-///@func Chance(value)
+/**
+* Function Description
+* @param {real} value Value between 0 - 1
+* @returns {bool} True/False
+*/
 function Chance(value) {
 	return value > random(1);
 }
 
-///@func Wave(value1, value2, duration, offset)
-///@desc Returns a value that will wave back and forth between [from-to] over [duration] seconds based on current time
-/// Examples:
-/// image_angle = Wave(-45,45,1,0)  -> rock back and forth 90 degrees in a second
-/// x = Wave(-10,10,0.25,0)         -> move left and right quickly
-/// Or here is a fun one! Make an object be all squishy!! ^u^
-/// image_xscale = Wave(0.5, 2.0, 1.0, 0.0)
-/// image_yscale = Wave(2.0, 0.5, 1.0, 0.0)
+/**
+* Returns a value that will wave back and forth between [from-to] over [duration] seconds based on current time Examples: image_angle = Wave(-45,45,1,0)  -> rock back and forth 90 degrees in a second x = Wave(-10,10,0.25,0)         -> move left and right quickly Or here is a fun one! Make an object be all squishy!! ^u^ image_xscale = Wave(0.5, 2.0, 1.0, 0.0) image_yscale = Wave(2.0, 0.5, 1.0, 0.0)
+* @param {real} value1 Description
+* @param {real} value2 Description
+* @param {real} duration Description
+* @param {real} offset Description
+* @returns {real} Description
+*/
 function Wave(value1, value2, duration, offset) {
 	var _a = (value2 - value1) * 0.5;
 	return value1 + _a + sin((((current_time * 0.001) + duration * offset) / duration) * (pi*2)) * _a;
 }
 
-function DrawSetText(_color = undefined, _font = undefined, _haling = undefined, _valing = undefined, _alpha = undefined) {
-	if _color != undefined draw_set_colour(_color);
-	if _font != undefined draw_set_font(_font);
-	if _haling != undefined draw_set_halign(_haling);
-	if _valing != undefined draw_set_valign(_valing);
-	if _alpha != undefined draw_set_alpha(_alpha);
+/**
+* Function Description
+* @param {Constant.Color} [color] Description
+* @param {Asset.GMFont} [font] Description
+* @param {Constant.Halign} [haling] Description
+* @param {Constant.Valign} [valing] Description
+* @param {real} [alpha] Description
+*/
+function DrawSetText(color = undefined, font = undefined, haling = undefined, valing = undefined, alpha = undefined) {
+	if !is_undefined(color) 	draw_set_colour(color);
+	if !is_undefined(font) 		draw_set_font(font);
+	if !is_undefined(haling) 	draw_set_halign(haling);
+	if !is_undefined(valing) 	draw_set_valign(valing);
+	if !is_undefined(alpha) 	draw_set_alpha(alpha);
 }
 
-///@desc DrawTextOutline(x,y,str,outwidth,outcol,outfidelity)
-///Created by Andrew McCluskey http://nalgames.com/
-///x,y: Coordinates to draw
-///str: String to draw
-///outwidth: Width of outline in pixels
-///outcol: Colour of outline (main text draws with regular set colour)
-///outfidelity: Fidelity of outline (recommended: 4 for small, 8 for medium, 16 for larger. Watch your performance!)
-function DrawTextOutline(_x, _y, _string, _outwidth, _outcolor, _outfidelity) {
+/**
+* Draw text with outlines
+* @param {real} x Coordinates to draw
+* @param {real} y Coordinates to draw
+* @param {string} _string String to draw
+* @param {real} outwidth Width of outline in pixels
+* @param {Constant.Color} outcolor Colour of outline (main text draws with regular set colour)
+* @param {real} outfidelity Fidelity of outline (recommended: 4 for small, 8 for medium, 16 for larger. Watch your performance!)
+*/
+function DrawTextOutline(x, y, _string, outwidth, outcolor, outfidelity) {
 	var _dto_dcol = draw_get_color();
-	draw_set_color(_outcolor);
-	for(var dto_i = 45; dto_i < 405; dto_i += 360/_outfidelity) {
-	    draw_text(_x + lengthdir_x(_outwidth, dto_i), _y + lengthdir_y(_outwidth, dto_i), _string);
+	draw_set_color(outcolor);
+	for(var dto_i = 45; dto_i < 405; dto_i += 360/outfidelity) {
+		draw_text(x + lengthdir_x(outwidth, dto_i), y + lengthdir_y(outwidth, dto_i), _string);
 	}
 	draw_set_color(_dto_dcol);
-	draw_text(_x,_y,_string);
+	draw_text(x,y,_string);
 }
 
-///@func DrawTextOutlineTransformed(_x, _y, _string, _xscale, _yscale, _outwidth, _outcolor, _outfidelity)
-///@desc Created by Andrew McCluskey http://nalgames.com/
-///Edited version by Limekys
-///x,y: Coordinates to draw
-///str: String to draw
-///outwidth: Width of outline in pixels
-///outcol: Colour of outline (main text draws with regular set colour)
-///outfidelity: Fidelity of outline (recommended: 4 for small, 8 for medium, 16 for larger. Watch your performance!)
-function DrawTextOutlineTransformed(_x, _y, _string, _xscale, _yscale, _outwidth, _outcolor, _outfidelity) {
+
+/**
+* Draw text with outlines transformed
+* @param {real} x Coordinates to draw
+* @param {real} y Coordinates to draw
+* @param {string} _string String to draw
+* @param {real} xscale Horizontal scale
+* @param {real} yscale Vertical scale
+* @param {real} outwidth Width of outline in pixels
+* @param {Constant.Color} outcolor Colour of outline (main text draws with regular set colour)
+* @param {real} outfidelity Fidelity of outline (recommended: 4 for small, 8 for medium, 16 for larger. Watch your performance!)
+*/
+function DrawTextOutlineTransformed(x, y, _string, xscale, yscale, outwidth, outcolor, outfidelity) {
 	var _dto_dcol = draw_get_color();
-	draw_set_color(_outcolor);
-	for(var dto_i = 45; dto_i < 405; dto_i += 360/_outfidelity) {
-	    draw_text_transformed(_x + lengthdir_x(_outwidth, dto_i), _y + lengthdir_y(_outwidth, dto_i), _string, _xscale, _yscale, 0);
+	draw_set_color(outcolor);
+	for(var dto_i = 45; dto_i < 405; dto_i += 360/outfidelity) {
+		draw_text_transformed(x + lengthdir_x(outwidth, dto_i), y + lengthdir_y(outwidth, dto_i), _string, xscale, yscale, 0);
 	}
 	draw_set_color(_dto_dcol);
-	draw_text_transformed(_x,_y,_string,_xscale,_yscale,0);
+	draw_text_transformed(x,y,_string,xscale,yscale,0);
 }
 
-///@func DrawTextOutlineTransformedExt(_x, _y, _string, _xscale, _yscale, _angle, _outwidth, _outcolor, _outfidelity)
-function DrawTextOutlineTransformedExt(_x, _y, _string, _xscale, _yscale, _angle, _outwidth, _outcolor, _outfidelity) {
+/**
+* Function Description
+* @param {real} x Description
+* @param {real} y Description
+* @param {string} _string Description
+* @param {real} xscale Description
+* @param {real} yscale Description
+* @param {real} angle Description
+* @param {real} outwidth Description
+* @param {Constant.Color} outcolor Description
+* @param {real} outfidelity Description
+*/
+function DrawTextOutlineTransformedExt(x, y, _string, xscale, yscale, angle, outwidth, outcolor, outfidelity) {
 	var _dto_dcol = draw_get_color();
-	draw_set_color(_outcolor);
-	for(var dto_i = 45; dto_i < 405; dto_i += 360/_outfidelity) {
-	    draw_text_transformed(_x + lengthdir_x(_outwidth, dto_i), _y + lengthdir_y(_outwidth, dto_i), _string, _xscale, _yscale, _angle);
+	draw_set_color(outcolor);
+	for(var dto_i = 45; dto_i < 405; dto_i += 360/outfidelity) {
+		draw_text_transformed(x + lengthdir_x(outwidth, dto_i), y + lengthdir_y(outwidth, dto_i), _string, xscale, yscale, angle);
 	}
 	draw_set_color(_dto_dcol);
-	draw_text_transformed(_x,_y,_string,_xscale,_yscale,_angle);
+	draw_text_transformed(x,y,_string,xscale,yscale,angle);
 }
 
-function DrawTextShadow(_x, _y, _string) {
+/**
+* Function Description
+* @param {real} x Description
+* @param {real} y Description
+* @param {string} _string Description
+*/
+function DrawTextShadow(x, y, _string) {
 	var _colour = draw_get_colour();
 	draw_set_colour(c_black);
-	draw_text(_x+1, _y+1, _string);
+	draw_text(x+1, y+1, _string);
 	draw_set_colour(_colour);
-	draw_text(_x, _y, _string);
+	draw_text(x, y, _string);
 }
 
-///@desc example: DrawTextSoftShadow(10,10,"Hello World!", font_name, c_white, c_black, 0,5,6,0.01, );
-function DrawTextSoftShadow(_x, _y, _string, _font, _offset_x, _offset_y, _blurfactor, _shadow_colour, _shadow_strenght, _text_colour) {
-	draw_set_font(_font);
-	var _shadow_strenght_calc = _shadow_strenght/(_blurfactor * _blurfactor)
-	draw_set_alpha(_shadow_strenght_calc);
-	draw_set_colour(_shadow_colour);
-	
-	var _bx = _blurfactor/2;
-	var _by = _blurfactor/2;
 
-	for (var ix = 0; ix < _blurfactor; ix++) {
-	    for (var iy = 0; iy < _blurfactor; iy++) {
-	        draw_text((_x-_bx) +_offset_x + ix, (_y-_by) +_offset_y + iy, _string);
-	    }
+/**
+* example: DrawTextSoftShadow(10,10,"Hello World!", font_name, c_white, c_black, 0,5,6,0.01, );
+* @param {real} x Description
+* @param {real} y Description
+* @param {string} _string Description
+* @param {Asset.GMFont} font Description
+* @param {real} offset_x Description
+* @param {real} offset_y Description
+* @param {real} blurfactor Description
+* @param {Constant.Color} shadow_colour Description
+* @param {real} shadow_strenght Description
+* @param {Constant.Color} text_colour Description
+*/
+function DrawTextSoftShadow(x, y, _string, font, offset_x, offset_y, blurfactor, shadow_colour, shadow_strenght, text_colour) {
+	draw_set_font(font);
+	var _shadow_strenght_calc = shadow_strenght/(blurfactor * blurfactor)
+	draw_set_alpha(_shadow_strenght_calc);
+	draw_set_colour(shadow_colour);
+	
+	var _bx = blurfactor/2;
+	var _by = blurfactor/2;
+
+	for (var ix = 0; ix < blurfactor; ix++) {
+		for (var iy = 0; iy < blurfactor; iy++) {
+			draw_text((x-_bx) +offset_x + ix, (y-_by) +offset_y + iy, _string);
+		}
 	}
 	draw_set_alpha(1);
-	draw_set_colour(_text_colour);
-	draw_text(_x, _y, _string);
+	draw_set_colour(text_colour);
+	draw_text(x, y, _string);
 }
 
-function DrawRectangleWidth(x1, y1, x2, y2, _width, _inside, _outline) {
-	if _inside == false
-	for (var i = 0; i < _width; ++i) {
-	    draw_rectangle(x1-i,y1-i,x2+i,y2+i,_outline);
+/**
+* Function Description
+* @param {real} x1 Description
+* @param {real} y1 Description
+* @param {real} x2 Description
+* @param {real} y2 Description
+* @param {real} width Description
+* @param {bool} inside Description
+* @param {bool} outline Description
+*/
+function DrawRectangleWidth(x1, y1, x2, y2, width, inside, outline) {
+	if inside == false
+	for (var i = 0; i < width; ++i) {
+		draw_rectangle(x1-i,y1-i,x2+i,y2+i,outline);
 	}
 	else
-	for (var i = 0; i < _width; ++i) {
-	    draw_rectangle(x1+i,y1+i,x2-i,y2-i,_outline);
+	for (var i = 0; i < width; ++i) {
+		draw_rectangle(x1+i,y1+i,x2-i,y2-i,outline);
 	}
 }
 
-///@desc StringZeroes(string,nubmer)
-///Returns _string as a string with zeroes if it has fewer than _nubmer characters
-///eg StringZeroes(150,6) returns "000150" or
-///StringZeroes(mins,2)+":"+StringZeroes(secs,2) might return "21:02"
-///Created by Andrew McCluskey, use it freely
-function StringZeroes(_string, _nubmer) {
+/**
+* Returns string as a string with zeroes if it has fewer than nubmer characters eg StringZeroes(150,6) returns "000150" or StringZeroes(mins,2)+":"+StringZeroes(secs,2) might return "21:02" Created by Andrew McCluskey, use it freely
+* @param {any} _string Description
+* @param {real} nubmer Description
+* @returns {string} Description
+*/
+function StringZeroes(_string, nubmer) {
 	var _str = "";
-	if string_length(string(_string)) < _nubmer {
-	    repeat(_nubmer-string_length(string(_string))) _str += "0";
+	if string_length(string(_string)) < nubmer {
+		repeat(nubmer-string_length(string(_string))) _str += "0";
 	}
 	_str += string(_string);
 	return _str;
 }
 
-///@desc DrawCircleCurve(x,y,r,bones,ang,angadd,width,outline)
-///x,y — Center of circle.
-///r — Radius.
-///bones — Amount of bones. More bones = more quality, but less speed. Minimum — 3.
-///ang — Angle of first circle's point.
-///angadd — Angle of last circle's point (relative to ang). 
-///width — Width of circle (may be positive or negative).
-///outline — 0 = curve, 1 = sector. 
-function DrawCircleCurve(_xx, _yy, _radius, _bones, _angle, _angleadd, _width, _outline) {
-	_bones = max(3,_bones);
+/**
+* Function Description
+* @param {real} x Center of circle
+* @param {real} y Center of circle
+* @param {real} radius Radius
+* @param {real} bones Amount of bones. More bones = more quality, but less speed. Minimum — 3
+* @param {real} angle Angle of first circle's point
+* @param {real} angleadd Angle of last circle's point (relative to ang)
+* @param {real} width Width of circle (may be positive or negative)
+* @param {bool} outline False = curve, True = sector
+*/
+function DrawCircleCurve(x, y, radius, bones, angle, angleadd, width, outline) {
+	bones = max(3,bones);
 	
 	var a,lp,lm,dp,dm,AAa,Wh;
-	a = _angleadd/_bones;
-	Wh = _width/2;
-	lp = _radius+Wh;
-	lm = _radius-Wh;
-	AAa = _angle+_angleadd;
+	a = angleadd/bones;
+	Wh = width/2;
+	lp = radius+Wh;
+	lm = radius-Wh;
+	AAa = angle+angleadd;
 	
-	if _outline {
+	if outline {
 		//OUTLINE
 		draw_primitive_begin(pr_trianglestrip); //Change to pr_linestrip, to see how it works.
-		draw_vertex(_xx+lengthdir_x(lm,_angle),_yy+lengthdir_y(lm,_angle)); //First point.
-		for(var i=1; i<=_bones; ++i)
+		draw_vertex(x+lengthdir_x(lm,angle),y+lengthdir_y(lm,angle)); //First point.
+		for(var i=1; i<=bones; ++i)
 		{
-			dp = _angle+a*i;
+			dp = angle+a*i;
 			dm = dp-a;
-			draw_vertex(_xx+lengthdir_x(lp,dm),_yy+lengthdir_y(lp,dm));
-			draw_vertex(_xx+lengthdir_x(lm,dp),_yy+lengthdir_y(lm,dp));
+			draw_vertex(x+lengthdir_x(lp,dm),y+lengthdir_y(lp,dm));
+			draw_vertex(x+lengthdir_x(lm,dp),y+lengthdir_y(lm,dp));
 		}
-		draw_vertex(_xx+lengthdir_x(lp,AAa),_yy+lengthdir_y(lp,AAa));
-		draw_vertex(_xx+lengthdir_x(lm,AAa),_yy+lengthdir_y(lm,AAa)); //Last two points to make circle look right.
+		draw_vertex(x+lengthdir_x(lp,AAa),y+lengthdir_y(lp,AAa));
+		draw_vertex(x+lengthdir_x(lm,AAa),y+lengthdir_y(lm,AAa)); //Last two points to make circle look right.
 		//OUTLINE
 	} else {
 		//SECTOR
 		draw_primitive_begin(pr_trianglefan); //Change to pr_linestrip, to see how it works.
-		draw_vertex(_xx,_yy); //First point in the circle's center.
-		for(var i=1; i<=_bones; ++i)
+		draw_vertex(x,y); //First point in the circle's center.
+		for(var i=1; i<=bones; ++i)
 		{
-			dp = _angle+a*i;
+			dp = angle+a*i;
 			dm = dp-a;
-			draw_vertex(_xx+lengthdir_x(lp,dm),_yy+lengthdir_y(lp,dm));
+			draw_vertex(x+lengthdir_x(lp,dm),y+lengthdir_y(lp,dm));
 		}
-		draw_vertex(_xx+lengthdir_x(lp,AAa),_yy+lengthdir_y(lp,AAa)); //Last point.
+		draw_vertex(x+lengthdir_x(lp,AAa),y+lengthdir_y(lp,AAa)); //Last point.
 		//SECTOR
 	}
 	draw_primitive_end();
 }
 
-function DrawHealthbarCircular(center_x, center_y, _radius, _start_ang, _health, _sprite) {
+/**
+* Function Description
+* @param {real} center_x Description
+* @param {real} center_y Description
+* @param {real} radius Description
+* @param {real} start_ang Description
+* @param {real} health Description
+* @param {Asset.GMSprite} sprite Description
+*/
+function DrawHealthbarCircular(center_x, center_y, radius, start_ang, health, sprite) {
 	var tex,steps,thick,oc;
-	tex = sprite_get_texture(_sprite,0);
+	tex = sprite_get_texture(sprite,0);
 	steps = 200;
-	thick = sprite_get_height(_sprite);
+	thick = sprite_get_height(sprite);
 
-	if ceil(steps*(_health/100)) >= 1 {
+	if ceil(steps*(health/100)) >= 1 {
 		
 		oc = draw_get_color();
 		draw_set_color(c_white);
 		
-	    var step,ang,side,hps,hpd;
-	    step = 0;
-	    ang = _start_ang;
-	    side = 0;
-	    draw_primitive_begin_texture(pr_trianglestrip,tex);
-	    draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang),center_y+lengthdir_y(_radius-thick/2+thick*side,ang),side,side);
-	    side = !side;
-	    draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang),center_y+lengthdir_y(_radius-thick/2+thick*side,ang),side,side);
-	    side = !side;
-	    draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang+360/steps),center_y+lengthdir_y(_radius-thick/2+thick*side,ang+360/steps),side,side);
-	    side = !side;
-	    hps = _health/(ceil(steps*(_health/100))+1);
-	    hpd = 0;
-	    repeat ceil(steps*(_health/100)+1) {
-	        step++;
-	        if step == ceil(steps*(_health/100)+1) { //final step
-	            ang += (360/steps)*(_health - hpd)/2;
-	            if ang>_start_ang+360 ang=_start_ang+360
-	            draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang),center_y+lengthdir_y(_radius-thick/2+thick*side,ang),side,side);
-	            side = !side;
-	            draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang),center_y+lengthdir_y(_radius-thick/2+thick*side,ang),side,side);
-	        }
-	        else {
-	            ang+=360/steps;
-	            draw_vertex_texture(center_x+lengthdir_x(_radius-thick/2+thick*side,ang),center_y+lengthdir_y(_radius-thick/2+thick*side,ang),side,side);
-	            side = !side;
-	        }
-	        hpd += hps;
-	    }
-	    draw_primitive_end();
-	    draw_set_color(oc);
+		var step,ang,side,hps,hpd;
+		step = 0;
+		ang = start_ang;
+		side = 0;
+		draw_primitive_begin_texture(pr_trianglestrip,tex);
+		draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang),center_y+lengthdir_y(radius-thick/2+thick*side,ang),side,side);
+		side = !side;
+		draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang),center_y+lengthdir_y(radius-thick/2+thick*side,ang),side,side);
+		side = !side;
+		draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang+360/steps),center_y+lengthdir_y(radius-thick/2+thick*side,ang+360/steps),side,side);
+		side = !side;
+		hps = health/(ceil(steps*(health/100))+1);
+		hpd = 0;
+		repeat ceil(steps*(health/100)+1) {
+			step++;
+			if step == ceil(steps*(health/100)+1) { //final step
+				ang += (360/steps)*(health - hpd)/2;
+				if ang>start_ang+360 ang=start_ang+360
+				draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang),center_y+lengthdir_y(radius-thick/2+thick*side,ang),side,side);
+				side = !side;
+				draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang),center_y+lengthdir_y(radius-thick/2+thick*side,ang),side,side);
+			}
+			else {
+				ang+=360/steps;
+				draw_vertex_texture(center_x+lengthdir_x(radius-thick/2+thick*side,ang),center_y+lengthdir_y(radius-thick/2+thick*side,ang),side,side);
+				side = !side;
+			}
+			hpd += hps;
+		}
+		draw_primitive_end();
+		draw_set_color(oc);
 	}
 }
 
+/**
+* Function Description
+* @param {string} _string Description
+* @param {struct} struct Description
+* @returns {string} Description
+*/
 function print_format(_string, struct) {
 	var list = variable_struct_get_names(struct);
 	for(var i = 0; i < array_length(list); i++){
@@ -261,6 +363,10 @@ function print_format(_string, struct) {
 	return _string;
 }
 
+/**
+* Extended show_debug_message function
+* @param {any} argument[0] Description
+*/
 function print() {
 	var time = print_format("[${hour}:${minute}:${second}]",{
 		hour: current_hour,
@@ -281,34 +387,38 @@ function print() {
 	//file_text_close(file);
 }
 
-///@desc Saves a successively numbered screenshot within the working directory
-///Returns true on success, false otherwise.
-///name prefix to assign screenshots, string
-///folder subfolder to save to (eg. "screens\"), string
-function SaveScreenshot(name) {
-	var i = 0, fname;
+/**
+* Saves a successively numbered screenshot within the working directory Returns true on success, false otherwise. name prefix to assign screenshots, string folder subfolder to save to (eg. "screens\"), string
+* @param {string} filename Filename
+* @returns {bool} File is exists (True/False)
+*/
+function SaveScreenshot(filename) {
+	var i = 0, _filename;
 	
 	if !directory_exists(working_directory + "Screenshots") directory_create(working_directory+"Screenshots");
 	// If there is a file with the current name and number,
 	// advance counter and keep looking:
 	do {
-	    fname = working_directory+"\\" + "Screenshots\\" + name + "_" + string(i) + ".png";
-	    i++;
-	} until (!file_exists(fname));
+		_filename = working_directory+"\\" + "Screenshots\\" + filename + "_" + string(i) + ".png";
+		i++;
+	} until (!file_exists(_filename));
 	// Once we've got a unused number we'll save the screenshot under it:
-	screen_save(fname);
-	return file_exists(fname);
+	screen_save(_filename);
+	return file_exists(_filename);
 }
 
-///@desc Returns the background data captured on the screen which can then be drawn later on.
+/**
+* Returns the background data captured on the screen which can then be drawn later on.
+* @returns {Asset.GMSprite} Description
+*/
 function MakeScreenshot() {
-	var ret = -1;
-	var sfc_width = surface_get_width(application_surface);
-	var sfc_height = surface_get_height(application_surface);
+	var _ret = -1;
+	var _sfc_width = surface_get_width(application_surface);
+	var _sfc_height = surface_get_height(application_surface);
 
 	// Create drawing surface
-	var sfc = surface_create(sfc_width,sfc_height);
-	surface_set_target(sfc);
+	var _sfc = surface_create(_sfc_width,_sfc_height);
+	surface_set_target(_sfc);
 	// Clear screen;
 	// Both draw_clear and draw_rectangle will clear your screen BUT
 	// on some systems, it creates ghostly images, for example, when
@@ -316,46 +426,77 @@ function MakeScreenshot() {
 	var _gpu_cwe = gpu_get_colorwriteenable();
 	gpu_set_colorwriteenable(true, true, true, true);
 	draw_clear_alpha(c_white, 0);
-	draw_rectangle_colour(0,0,sfc_width,sfc_height,c_black,c_black,c_black,c_black,false);
+	draw_rectangle_colour(0,0,_sfc_width,_sfc_height,c_black,c_black,c_black,c_black,false);
 	gpu_set_colorwriteenable(true, true, true, false);
 	// Capture screen
 	draw_surface(application_surface,0,0);
-	ret = sprite_create_from_surface(sfc, 0, 0, sfc_width, sfc_height, false, false, 0, 0);
+	_ret = sprite_create_from_surface(_sfc, 0, 0, _sfc_width, _sfc_height, false, false, 0, 0);
 	// Finalise drawing process and clear surface from memory
 	surface_reset_target();
 	gpu_set_colorwriteenable(_gpu_cwe[0], _gpu_cwe[1], _gpu_cwe[2], _gpu_cwe[3]);
-	surface_free(sfc);
+	surface_free(_sfc);
 
-	return ret;
+	return _ret;
 }
 
-function DrawSpriteOffset(sprite, subimg, pos_x, pos_y, xscale = 1, yscale = 1, rotation = 0, color = c_white, alpha = 1, x_offset = 0, y_offset = 0) {
+/**
+* Function Description
+* @param {Asset.GMSprite} sprite Description
+* @param {real} subimg Description
+* @param {real} x Description
+* @param {real} y Description
+* @param {real} [xscale]=1 Description
+* @param {real} [yscale]=1 Description
+* @param {real} [rotation]=0 Description
+* @param {Constant.Color} [color]=c_white Description
+* @param {real} [alpha]=1 Description
+* @param {real} [x_offset]=0 Description
+* @param {real} [y_offset]=0 Description
+*/
+function DrawSpriteOffset(sprite, subimg, x, y, xscale = 1, yscale = 1, rotation = 0, color = c_white, alpha = 1, x_offset = 0, y_offset = 0) {
 	//Calculate rotation
 	var _c = dcos(rotation);
 	var _s = dsin(rotation);
 	var _rot_x = _c * x_offset + _s * y_offset;
 	var _rot_y = _c * y_offset - _s * x_offset;
 	//Draw
-	draw_sprite_ext(sprite, subimg, pos_x - _rot_x, pos_y - _rot_y, xscale, yscale, rotation, color, alpha);
+	draw_sprite_ext(sprite, subimg, x - _rot_x, y - _rot_y, xscale, yscale, rotation, color, alpha);
 }
 
-function DrawTextSpriteShadow(pos_x, pos_y, text, sprite_shadow) {
+/**
+* Function Description
+* @param {real} x Description
+* @param {real} y Description
+* @param {string} text Description
+* @param {Asset.GMSprite} sprite_shadow Description
+*/
+function DrawTextSpriteShadow(x, y, text, sprite_shadow) {
 	var _txt_w = string_width(text) + 70;
 	//var _txt_h = string_height(_text);
 	
-	draw_sprite_stretched_ext(sprite_shadow, 0, pos_x - _txt_w/2, pos_y - 44, _txt_w, 88, c_white, 0.5);
-	draw_text(pos_x, pos_y, text);
+	draw_sprite_stretched_ext(sprite_shadow, 0, x - _txt_w/2, y - 44, _txt_w, 88, c_white, 0.5);
+	draw_text(x, y, text);
 }
 
-///@desc Returns new range from old range
+/**
+* Returns new range from old range
+* @param {real} value Description
+* @param {real} old_min Description
+* @param {real} old_max Description
+* @param {real} new_min Description
+* @param {real} new_max Description
+*/
 function Range(value, old_min, old_max, new_min, new_max) {
 	return ((value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min;
 }
 
-///@arg {String} name
-///@arg {Real} seconds
-///@arg {Function} _function
-///@arg {Real} start_from
+/**
+* Function Description
+* @param {string} name Description
+* @param {real} seconds Description
+* @param {function} _function Description
+* @param {real} [start_from]=0 Description
+*/
 function IntervalUpdateFunction(name, seconds, _function, start_from = 0) {
 	var n1 = name + "_interval";
 	var n2 = name + "_interval_lenght";
@@ -369,17 +510,21 @@ function IntervalUpdateFunction(name, seconds, _function, start_from = 0) {
 	}
 }
 
-///@arg {Array} _array
-function ArrayShuffle(_array) {
-	var _size = array_length(_array), i, j, k;
+/**
+* Custom array shuffle
+* @param {array<any>} array Description
+*/
+function ArrayShuffle(array) {
+	var _size = array_length(array), i, j, k;
 	for (i = 0; i < _size; i++)
 	{
-	    j = irandom_range(i, _size - 1);
-	    if (i != j)
-	    {
-	        k = _array[i];
-	        _array[i] = _array[j];
-	        _array[j] = k;
-	    }
+		j = irandom_range(i, _size - 1);
+		if (i != j)
+		{
+			k = array[i];
+			array[i] = array[j];
+			array[j] = k;
+		}
 	}
 }
+
