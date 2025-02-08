@@ -1,5 +1,9 @@
 # Advanced Particle System
 
+This system was originally designed to allow manual control of the particle speed, since Game Maker particles were tied to game time. But now we have part_system_automatic_update() and part_system_update() that allow us to disable automatic updating and update them manually at the speed we want. So since then I stopped updating this system further and advise you to use Game Maker's built-in particle system, especially since we now have a convenient built-in particle editor and no longer need to write huge code in which we need to adjust every parameter of the particle.
+
+But some aspects still remain unsolved, such as gravity to a point and collision checking. So if you still need these features, you can use them with this library!
+
 [WIKI PAGE](https://github.com/Limekys/AdvancedParticleSystem/wiki/Main)
 
 # Compare
