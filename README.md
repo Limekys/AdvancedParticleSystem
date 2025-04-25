@@ -177,7 +177,7 @@ part_step_function(
 	}
 );
 ```
-![Result](https://i.ibb.co/PzNQCJT/rf4-Ff-DALt8.gif)
+![Result](https://github.com/user-attachments/assets/753060b6-3df8-4ae9-8ae1-319f2e6ff5b8)
 
 Or just a rain:
 
